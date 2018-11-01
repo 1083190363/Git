@@ -1,6 +1,7 @@
 package mr;
 
 import IpAnalysis.IpUtil;
+import IpAnalysis.userAgentUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -8,7 +9,6 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
@@ -30,7 +30,6 @@ public class LogAnalysis {
             String[] split = string.split("\\^A");
             //获取ip地址
             String ip = split[0];
-
             //获取时间戳
             String time = split[1];
             //获取剩余的字段
@@ -55,8 +54,7 @@ public class LogAnalysis {
                 } else if (k.equals("l")) {
                     kvsb.append("Language:"+v+"\t");
                 } else if (k.equals("b_iev")) {
-                    String[] strs = v.split("%");
-                    kvsb.append("Browser:"+strs[13].substring(2)+" "+strs[14].substring(2)+"\t");
+                    kvsb.append("useAgent"+userAgentUtil.analyticUserAgent(v)+"\t");
                 } else if (k.equals("b_rst")) {
                     kvsb.append("Resolution:"+v+"\t");
                 }
