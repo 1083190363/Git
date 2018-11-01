@@ -1,5 +1,6 @@
 package mr;
 
+import IpAnalysis.IpUtil;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
@@ -14,8 +15,8 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import java.io.IOException;
 
 public class LogAnalysis {
-    static class MyMapper extends Mapper<LongWritable, Text,Text,NullWritable>{
-        Text k = new Text();
+    static class MyMapper extends Mapper<LongWritable, Text,NullWritable,Text>{
+        Text v = new Text();
         @Override
         protected void setup(Context context) throws IOException, InterruptedException {
             super.setup(context);
@@ -23,16 +24,49 @@ public class LogAnalysis {
 
         @Override
         protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+            StringBuffer kvsb = new StringBuffer();
             String string = value.toString();
             //切割
-            String[] split = string.split("^A");
+            String[] split = string.split("\\^A");
             //获取ip地址
             String ip = split[0];
+
             //获取时间戳
             String time = split[1];
-            k.set(ip);
-            k.set(time);
-            context.write(k,NullWritable.get());
+            //获取剩余的字段
+            String[] keyvalues = split[3].split("\\?")[1].split("&");
+            kvsb.append("IP:"+split[0]+"\t");
+            kvsb.append("Address:"+ IpUtil.getRegionInfoByIp(split[0])+"\t");
+            kvsb.append("TimeStamp:"+split[1]+"\t");
+            for (String kv : keyvalues) {
+                String[] strings = kv.split("=");
+                String k = strings[0];
+                String v = strings[1];
+                if (k.equals("en")) {
+                    kvsb.append("Event:"+v+"\t");
+                } else if (k.equals("ver")) {
+                    kvsb.append("Version:"+v+"\t");
+                } else if (k.equals("pl")) {
+                    kvsb.append("Platform:"+v+"\t");
+                } else if (k.equals("sdk")) {
+                    kvsb.append("Sdk:"+v+"\t");
+                } else if (k.equals("u_ud")) {
+                    kvsb.append("Uuid:"+v+"\t");
+                } else if (k.equals("l")) {
+                    kvsb.append("Language:"+v+"\t");
+                } else if (k.equals("b_iev")) {
+                    String[] strs = v.split("%");
+                    kvsb.append("Browser:"+strs[13].substring(2)+" "+strs[14].substring(2)+"\t");
+                } else if (k.equals("b_rst")) {
+                    kvsb.append("Resolution:"+v+"\t");
+                }
+            }
+            String[] split1 = kvsb.substring(0, kvsb.length() - 1).split("\t");
+//            for (String s : split1) {
+//               v.set(s);
+//            }
+           // context.write(NullWritable.get(),v);
+            context.write(NullWritable.get(),new Text(kvsb.toString().substring(0,kvsb.length()-1)));
         }
 
         @Override
@@ -40,28 +74,28 @@ public class LogAnalysis {
             super.cleanup(context);
         }
     }
-    static class MyReducer extends Reducer<Text,Text,Text,NullWritable>{
-        @Override
-        protected void setup(Context context) throws IOException, InterruptedException {
-            super.setup(context);
-        }
-
-        @Override
-        protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-            context.write(key,NullWritable.get());
-        }
-
-        @Override
-        protected void cleanup(Context context) throws IOException, InterruptedException {
-            super.cleanup(context);
-        }
-    }
+//    static class MyReducer extends Reducer<Text,Text,Text,NullWritable>{
+//        @Override
+//        protected void setup(Context context) throws IOException, InterruptedException {
+//            super.setup(context);
+//        }
+//
+//        @Override
+//        protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+//            context.write(key,NullWritable.get());
+//        }
+//
+//        @Override
+//        protected void cleanup(Context context) throws IOException, InterruptedException {
+//            super.cleanup(context);
+//        }
+//    }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         //获取配置对象
         Configuration conf = new Configuration();
         //获取hdfs连接参数
-        conf.set("fs.defaultFS","hdfs://hadoop01:9000");
+        conf.set("fs.defaultFS","file:///");
         conf.set("mapreduce.framework.name","local");
         //创建一个对象
         Job job = Job.getInstance(conf,"LogAnalysis");
@@ -69,16 +103,16 @@ public class LogAnalysis {
         job.setJarByClass(LogAnalysis.class);
         //设置Mapper的执行的业务类
         job.setMapperClass(MyMapper.class);
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(NullWritable.class);
+        job.setMapOutputKeyClass(NullWritable.class);
+        job.setMapOutputValueClass(Text.class);
 //        //设置Reduce的相关参数
-//        job.setReducerClass(MyReduce.class);
+//        job.setReducerClass(MyReducer.class);
 //        job.setOutputKeyClass(Text.class);
-//        job.setOutputValueClass(DoubleWritable.class);
+//        job.setOutputValueClass(NullWritable.class);
         //设置job的输入文件目录
-        FileInputFormat.setInputPaths(job,new Path("hdfs://hadoop01:9000/logs"));
+        FileInputFormat.setInputPaths(job,new Path("F:\\git\\InputData"));
         //设置文件的输出文件目录
-        FileOutputFormat.setOutputPath(job,new Path("F:\\千峰学习\\Hadoop学习资料\\Hadoop第六天\\day11\\GP1809\\DataOut"));
+        FileOutputFormat.setOutputPath(job,new Path("F:\\git\\LogOut"));
 
         System.exit(job.waitForCompletion(true)? 0 : 1);
     }
