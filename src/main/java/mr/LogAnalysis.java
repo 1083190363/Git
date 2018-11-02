@@ -14,6 +14,9 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
 
+/**
+ * 自己做的mr
+ */
 public class LogAnalysis {
     static class MyMapper extends Mapper<LongWritable, Text,NullWritable,Text>{
         Text v = new Text();

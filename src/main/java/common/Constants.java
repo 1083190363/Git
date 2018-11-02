@@ -21,6 +21,8 @@ public class Constants {
         public String name;
         public String alias;
 
+
+
         EventEnum(int id, String name, String alias) {
             this.id = id;
             this.name = name;
@@ -29,6 +31,14 @@ public class Constants {
 
         //根据名称获取枚举
         public static EventEnum valueOfAlias(String alia){
+            /**
+            * @todo
+            * @author CaoXueCheng
+            * @date 2018/11/2 20:53
+            * @method valueOfAlias
+            * @param [alia]
+            */
+
             for (EventEnum event : values()){
                 if(event.alias.equals(alia)){
                     return event;

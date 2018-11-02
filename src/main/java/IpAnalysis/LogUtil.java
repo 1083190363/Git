@@ -81,10 +81,8 @@ public class LogUtil {
         }
     }
 
-    /**
-     * 将map中的ip取出来，然后解析成国家省市，然后再放入map中
-     * @param map
-     */
+
+
     private static void handleIp(Map<String, String> map) {
         if(map.containsKey(Constants.LOG_IP)){
             IpUtil.RegionInfo info = IpUtil.getRegionInfoByIp(map.get(Constants.LOG_IP));
@@ -100,6 +98,8 @@ public class LogUtil {
      * 从map中取出b_iev的值，然后解析userAgent，再存入到map中
      * @param map
      */
+
+
     private static void hadnleUserAgent(Map<String, String> map) {
         if(map.containsKey(Constants.LOG_USERAGENT)){
             userAgentUtil.userAgentInfo info = userAgentUtil.parserUserAgent(map.get(Constants.LOG_USERAGENT));

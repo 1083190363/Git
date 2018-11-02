@@ -13,12 +13,14 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.Map;
 
+
 public class Etl2HdfsMapper extends Mapper<LongWritable, Text,LogWritable, NullWritable> {
     private static Logger logger = Logger.getLogger(Etl2HdfsMapper.class);
     private static LogWritable k = new LogWritable();
     private static int inputRecords,filterRecords,outputRecords;
-
     @Override
+
+
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String line = value.toString();
         inputRecords++;
@@ -49,12 +51,12 @@ public class Etl2HdfsMapper extends Mapper<LongWritable, Text,LogWritable, NullW
         }
     }
 
-    /**
-     * 真正的处理将map中的数据进行输出
-     * @param map
-     * @param context
-     */
+   
+
+    
     private void handleLog(Map<String, String> map, Context context) {
+
+
         try {
             for (Map.Entry<String,String> en: map.entrySet() ) {
                 //this.k.setB_iev(en.getValue());
