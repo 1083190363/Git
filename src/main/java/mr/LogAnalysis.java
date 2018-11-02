@@ -88,7 +88,6 @@ public class LogAnalysis {
 //            super.cleanup(context);
 //        }
 //    }
-
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         //获取配置对象
         Configuration conf = new Configuration();
