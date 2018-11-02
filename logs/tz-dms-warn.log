@@ -84,3 +84,16 @@ Caused by: java.lang.ArrayIndexOutOfBoundsException: 1
 2018-11-01 19:54:20,009  WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
 2018-11-01 20:11:04,309  WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
 2018-11-01 20:11:04,395  WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2018-11-02 19:35:21,904  WARN [org.apache.hadoop.fs.FileSystem] - "hdfs:hadoop01:9000" is a deprecated filesystem name. Use "hdfs://hdfs:hadoop01:9000/" instead.
+2018-11-02 19:35:21,978  WARN [org.apache.hadoop.fs.FileSystem] - "hdfs:hadoop01:9000" is a deprecated filesystem name. Use "hdfs://hdfs:hadoop01:9000/" instead.
+2018-11-02 19:35:59,384  WARN [org.apache.hadoop.fs.FileSystem] - "hdfs:hadoop01:9000" is a deprecated filesystem name. Use "hdfs://hdfs:hadoop01:9000/" instead.
+2018-11-02 19:35:59,395  WARN [org.apache.hadoop.fs.FileSystem] - "hdfs:hadoop01:9000" is a deprecated filesystem name. Use "hdfs://hdfs:hadoop01:9000/" instead.
+2018-11-02 19:35:59,576  WARN [org.apache.hadoop.fs.FileSystem] - "hdfs:hadoop01:9000" is a deprecated filesystem name. Use "hdfs://hdfs:hadoop01:9000/" instead.
+2018-11-02 19:48:16,955  WARN [org.apache.hadoop.fs.FileSystem] - "hdfs:hadoop01:9000" is a deprecated filesystem name. Use "hdfs://hdfs:hadoop01:9000/" instead.
+2018-11-02 19:48:17,044  WARN [org.apache.hadoop.fs.FileSystem] - "hdfs:hadoop01:9000" is a deprecated filesystem name. Use "hdfs://hdfs:hadoop01:9000/" instead.
+2018-11-02 19:48:17,378  WARN [org.apache.hadoop.fs.FileSystem] - "hdfs:hadoop01:9000" is a deprecated filesystem name. Use "hdfs://hdfs:hadoop01:9000/" instead.
+2018-11-02 19:54:42,704  WARN [org.apache.hadoop.fs.FileSystem] - "hdfs:hadoop01:9000" is a deprecated filesystem name. Use "hdfs://hdfs:hadoop01:9000/" instead.
+2018-11-02 19:55:23,528  WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2018-11-02 19:55:23,604  WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - No job jar file set.  User classes may not be found. See Job or Job#setJar(String).
+2018-11-02 19:58:34,034  WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+2018-11-02 19:58:34,089  WARN [org.apache.hadoop.mapreduce.JobResourceUploader] - No job jar file set.  User classes may not be found. See Job or Job#setJar(String).

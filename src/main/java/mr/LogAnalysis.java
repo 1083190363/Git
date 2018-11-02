@@ -54,7 +54,7 @@ public class LogAnalysis {
                 } else if (k.equals("l")) {
                     kvsb.append("Language:"+v+"\t");
                 } else if (k.equals("b_iev")) {
-                    kvsb.append("useAgent"+userAgentUtil.analyticUserAgent(v)+"\t");
+                    kvsb.append("useAgent"+userAgentUtil.parserUserAgent(v)+"\t");
                 } else if (k.equals("b_rst")) {
                     kvsb.append("Resolution:"+v+"\t");
                 }
@@ -92,8 +92,8 @@ public class LogAnalysis {
         //获取配置对象
         Configuration conf = new Configuration();
         //获取hdfs连接参数
-        conf.set("fs.defaultFS","file:///");
-        conf.set("mapreduce.framework.name","local");
+        conf.set("fs.defaultFS","hdfs://hadoop01:9000");
+        //conf.set("mapreduce.framework.name","local");
         //创建一个对象
         Job job = Job.getInstance(conf,"LogAnalysis");
         //设置job的执行路径
@@ -102,14 +102,15 @@ public class LogAnalysis {
         job.setMapperClass(MyMapper.class);
         job.setMapOutputKeyClass(NullWritable.class);
         job.setMapOutputValueClass(Text.class);
+        job.setNumReduceTasks(0);
 //        //设置Reduce的相关参数
 //        job.setReducerClass(MyReducer.class);
 //        job.setOutputKeyClass(Text.class);
 //        job.setOutputValueClass(NullWritable.class);
         //设置job的输入文件目录
-        FileInputFormat.setInputPaths(job,new Path("F:\\git\\InputData"));
+        FileInputFormat.setInputPaths(job,new Path("/logs"));
         //设置文件的输出文件目录
-        FileOutputFormat.setOutputPath(job,new Path("F:\\git\\LogOut"));
+        FileOutputFormat.setOutputPath(job,new Path("/out"));
 
         System.exit(job.waitForCompletion(true)? 0 : 1);
     }
