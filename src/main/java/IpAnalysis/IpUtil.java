@@ -1,6 +1,7 @@
 package IpAnalysis;
 
 import com.alibaba.fastjson.JSONObject;
+import common.GlobalConstants;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -160,9 +161,10 @@ public class IpUtil extends IPSeeker {
      * 封装ip解析出来的国家省市
      */
     public static class RegionInfo{
-        private String country = "unknown";
-        private String province = "unknown";
-        private String city = "unknown";
+        private String default_value = GlobalConstants.DEFAULT_VALUE;
+        private String country = default_value;
+        private String province = default_value;
+        private String city = default_value;
 
         public RegionInfo() {
         }

@@ -9,7 +9,6 @@ import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.util.Map;
 
@@ -19,8 +18,14 @@ public class Etl2HdfsMapper extends Mapper<LongWritable, Text,LogWritable, NullW
     private static LogWritable k = new LogWritable();
     private static int inputRecords,filterRecords,outputRecords;
     @Override
-
-
+  /**
+  * @todo
+  * @author CaoXueCheng
+  * @date 2018/11/2 20:58
+  * @method map
+  * @param [key, value, context]
+  * @return void
+  */
     protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
         String line = value.toString();
         inputRecords++;
@@ -36,7 +41,6 @@ public class Etl2HdfsMapper extends Mapper<LongWritable, Text,LogWritable, NullW
         String eventName = map.get(Constants.LOG_EVENT_NAME);
         //获取到事件对应的枚举值
         Constants.EventEnum event = Constants.EventEnum.valueOfAlias(eventName);
-
         switch (event){
             case LANUCH:
             case PAGEVIEW:
