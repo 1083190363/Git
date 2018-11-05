@@ -10,4 +10,5 @@ public class GlobalConstants {
     public static final String USER = "hadoop";
 
     public static final String PASSWORD = "hadoop";
+    public static final long DAY_OF_MILLSECOND = 86400000l;
 }
