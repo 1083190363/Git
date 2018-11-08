@@ -1,4 +1,4 @@
-package mr.nu;
+package mr.newuser;
 
 /**
  * @ProjectName: git
@@ -15,7 +15,6 @@ package mr.nu;
 import common.GlobalConstants;
 import common.KpiType;
 import mr.IOutputWritter;
-import mr.OutputWritable;
 import mr.service.IDimension;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.IntWritable;
@@ -23,6 +22,7 @@ import org.apache.log4j.Logger;
 import value.StatsBaseDimension;
 import value.StatsOutputValue;
 import value.StatsUserDimension;
+import value.reduce.OutputValue;
 
 import java.sql.PreparedStatement;
 
@@ -42,7 +42,7 @@ public class BrowserNewUserOutputWritter implements IOutputWritter {
 
         try {
             StatsUserDimension k = (StatsUserDimension) key;
-            OutputWritable v = (OutputWritable) value;
+            OutputValue v = (OutputValue) value;
 
             //获取新增用户的值
             int newUser = ((IntWritable)(v.getValue().get(new IntWritable(-1)))).get();
@@ -57,8 +57,8 @@ public class BrowserNewUserOutputWritter implements IOutputWritter {
             ps.setInt(++i,newUser);
             ps.setString(++i,conf.get(GlobalConstants.RUNNING_DATE));//注意这里需要在runner类里面进行赋值
             ps.setInt(++i,newUser);
-
-            ps.addBatch();//添加到批处理中，批量执行SQL语句
+            ps.addBatch();
+            //添加到批处理中，批量执行SQL语句
         } catch (Exception e) {
             logger.warn("给ps赋值失败！！！");
         }

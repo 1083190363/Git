@@ -14,4 +14,5 @@ import org.apache.hadoop.io.WritableComparable;
  * @Version: 1.0
  */
 public abstract  class BaseDimension implements WritableComparable<BaseDimension> {
+//为了下面子类判断类型,进行类型转换
 }

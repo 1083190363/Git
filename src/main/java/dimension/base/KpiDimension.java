@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * Kpi维度
+ * Kpi维度:按小时的活跃用户,小时的session个数
  */
 public class KpiDimension extends BaseDimension{
     private int id;

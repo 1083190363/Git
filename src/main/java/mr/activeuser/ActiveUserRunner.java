@@ -1,16 +1,4 @@
-package mr.nu;
-
-/**
- * @ProjectName: git
- * @Package: mr.nu
- * @ClassName: NewUserRunner
- * @Description: java类作用描述
- * @Author: CaoXueCheng
- * @CreateDate: 2018/11/5 14:46
- * @UpdateUser: CaoXueCheng
- * @UpdateDate: 2018/11/5 14:46
- * @Version: 1.0
- */
+package mr.activeuser;
 
 import IpAnalysis.JdbcUtil;
 import IpAnalysis.TimeUtil;
@@ -18,7 +6,7 @@ import common.DateEnum;
 import common.GlobalConstants;
 import dimension.base.DateDimension;
 import mr.OutputToMySqlFormat;
-import mr.OutputWritable;
+import mr.newuser.NewUserRunner;
 import mr.service.IDimension;
 import mr.service.impl.IDimensionImpl;
 import org.apache.hadoop.conf.Configuration;
@@ -31,6 +19,7 @@ import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
 import value.StatsUserDimension;
 import value.map.TimeOutputValue;
+import value.reduce.OutputValue;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -39,25 +28,28 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
- * 〈一句话功能简述〉<br>
- * 〈运行类---主类〉
- *  修改1---新增总用户---user表
- * @author 14751
- * @create 2018/9/21
- * @since 1.0.0
+ * @ProjectName: git
+ * @Package: mr.activeuser
+ * @ClassName: ActiveUserRunner
+ * @Description: 活跃用户的reducer类
+ * @Author: CaoXueCheng
+ * @CreateDate: 2018/11/6 22:30
+ * @UpdateUser: CaoXueCheng
+ * @UpdateDate: 2018/11/6 22:30
+ * @Version: 1.0
  */
-public class NewUserRunner implements Tool {
+public class ActiveUserRunner implements Tool {
+
     private static final Logger logger = Logger.getLogger(NewUserRunner.class);
     private Configuration conf = new Configuration();
 
     //主函数---入口
     public static void main(String[] args){
         try {
-            ToolRunner.run(new Configuration(),new NewUserRunner(),args);
+                ToolRunner.run(new Configuration(),new ActiveUserRunner(),args);
         } catch (Exception e) {
-            logger.warn("NEW_USER TO MYSQL is failed !!!",e);
+            logger.warn("Active_USER TO MYSQL is failed !!!",e);
         }
     }
 
@@ -84,20 +76,20 @@ public class NewUserRunner implements Tool {
 //        String date = TimeUtil.parseLongToString(GlobalConstants.DEFAULT_FORMAT);//这么做不符合实际生产，因为数据不可能是当天立刻产生的
 //        conf.set(GlobalConstants.RUNNING_DATE,date);
 
-        Job job = Job.getInstance(conf,"NEW_USER TO MYSQL");
+        Job job = Job.getInstance(conf,"Active_USER TO MYSQL");
 
-        job.setJarByClass(NewUserRunner.class);
+        job.setJarByClass(ActiveUserRunner.class);
 
         //设置map相关参数
-        job.setMapperClass(NewUserMapper.class);
+        job.setMapperClass(ActiveUserMapper.class);
         job.setMapOutputKeyClass(StatsUserDimension.class);
         job.setMapOutputValueClass(TimeOutputValue.class);
 
         //设置reduce相关参数
         //设置reduce端的输出格式类
-        job.setReducerClass(NewUserReducer.class);
+        job.setReducerClass(ActiveUserReducer.class);
         job.setOutputKeyClass(StatsUserDimension.class);
-        job.setOutputValueClass(OutputWritable.class);
+        job.setOutputValueClass(OutputValue.class);
 
         job.setOutputFormatClass(OutputToMySqlFormat.class);
 
@@ -106,13 +98,14 @@ public class NewUserRunner implements Tool {
 
         //设置输入参数
         this.handleInputOutput(job);
-        return job.waitForCompletion(true)? 0:1;
-//        if(job.waitForCompletion(true)){
-//            this.computeNewTotalUser(job);//修改1
-//            return 0;
-//        }else{
-//            return 1;
-//        }
+        this.computeNewTotalUser(job);
+        // return job.waitForCompletion(true)? 0:1;
+        if(job.waitForCompletion(true)){
+            this.computeNewTotalUser(job);//修改1
+            return 0;
+        }else{
+            return 1;
+        }
     }
 
     //修改1
@@ -146,7 +139,7 @@ public class NewUserRunner implements Tool {
         //获取时间维度Id
         int nowDateDimensionId = -1;
         int yesterdayDateDimensionId = -1;
-
+        //System.out.println(nowDateDiemnsion+"111111111111");
 
         Connection conn = null;
         PreparedStatement ps = null;
@@ -155,10 +148,10 @@ public class NewUserRunner implements Tool {
             nowDateDimensionId = iDimension.getDimensionIdByObject(nowDateDiemnsion);
             yesterdayDateDimensionId = iDimension.getDimensionIdByObject(yesterdayDateDiemnsion);
 
-
             conn = JdbcUtil.getConn();
             Map<String,Integer> map = new HashMap<String,Integer>();
             //开始判断维度Id是否正确
+            //System.out.println("哈哈哈");
             if(nowDateDimensionId > 0){
                 ps = conn.prepareStatement(conf.get("other_new_total_browser_user_now_sql"));
                 ps.setInt(1,nowDateDimensionId);
@@ -171,26 +164,11 @@ public class NewUserRunner implements Tool {
                 }
             }
 
-            //查询前一天的新增总用户
-            if(yesterdayDateDimensionId > 0){
-                ps = conn.prepareStatement(conf.get("other_new_total_browser_user_yesterday_sql"));
-                ps.setInt(1,nowDateDimensionId);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    int platformId = rs.getInt("platform_dimension_id");
-                    int browserId = rs.getInt("browser_dimension_id");
-                    int newTotalUsers = rs.getInt("total_install_users");
-                    String key = platformId +"_"+browserId;
-                    if(map.containsKey(key)){
-                        newTotalUsers += map.get(key);
-                    }
-                    //存储
-                    map.put(key,newTotalUsers);
-                }
-            }
+
 
             //更新
             if(map.size() > 0){
+                System.out.println(map.size()+"大小");
                 for (Map.Entry<String,Integer> en:map.entrySet()){
                     ps = conn.prepareStatement(conf.get("other_new_total_browser_user_update_sql"));
 
@@ -206,7 +184,6 @@ public class NewUserRunner implements Tool {
                     ps.execute();
                 }
             }
-
 
         } catch (Exception e) {
             e.printStackTrace();

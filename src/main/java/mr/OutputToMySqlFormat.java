@@ -11,7 +11,7 @@ import org.apache.hadoop.mapreduce.lib.db.DBOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter;
 import value.StatsBaseDimension;
 import value.StatsOutputValue;
-
+import value.reduce.OutputValue;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,7 +26,7 @@ import java.util.Map;
  * @Vesion 1.0
  * @Description 将结果输出到mysql的自定义类
  **/
-public class OutputToMySqlFormat extends OutputFormat<StatsBaseDimension, OutputWritable> {
+public class OutputToMySqlFormat extends OutputFormat<StatsBaseDimension, OutputValue> {
 
     //DBOutputFormat
 
@@ -39,7 +39,7 @@ public class OutputToMySqlFormat extends OutputFormat<StatsBaseDimension, Output
      * @throws InterruptedException
      */
     @Override
-    public RecordWriter<StatsBaseDimension, OutputWritable> getRecordWriter(TaskAttemptContext taskAttemptContext) throws IOException, InterruptedException {
+    public RecordWriter<StatsBaseDimension, OutputValue> getRecordWriter(TaskAttemptContext taskAttemptContext) throws IOException, InterruptedException {
         Connection conn = JdbcUtil.getConn();
         Configuration conf = taskAttemptContext.getConfiguration();
         IDimension iDimension = new IDimensionImpl();
@@ -60,7 +60,7 @@ public class OutputToMySqlFormat extends OutputFormat<StatsBaseDimension, Output
     /**
      * 用于封装写出记录到mysql的信息
      */
-    public static class OutputToMysqlRecordWritter extends RecordWriter<StatsBaseDimension,OutputWritable>{
+    public static class OutputToMysqlRecordWritter extends RecordWriter<StatsBaseDimension,OutputValue>{
         Configuration conf = null;
         Connection conn = null;
         IDimension iDimension = null;
@@ -83,7 +83,7 @@ public class OutputToMySqlFormat extends OutputFormat<StatsBaseDimension, Output
          * @throws InterruptedException
          */
         @Override
-        public void write(StatsBaseDimension key, OutputWritable value) throws IOException, InterruptedException {
+        public void write(StatsBaseDimension key, OutputValue value) throws IOException, InterruptedException {
             //获取kpi
             KpiType kpi = value.getKpi();
             PreparedStatement ps = null;
@@ -100,9 +100,10 @@ public class OutputToMySqlFormat extends OutputFormat<StatsBaseDimension, Output
                 count++;
 
                 //为ps赋值准备
-                String calssName = conf.get("writter_"+kpi.kpiName);
+                String className = conf.get("writter_"+kpi.kpiName);
+               // System.out.println("断点");
                 //com.yaxin.bigdata.analystic.mr.nu.NewUserOutputWritter
-                Class<?> classz = Class.forName(calssName); //将报名+类名转换成类
+                Class<?> classz = Class.forName(className); //将报名+类名转换成类
                 IOutputWritter writter = (IOutputWritter)classz.newInstance();
                 //调用IOutputWritter中的output方法
                 writter.output(conf,key, (StatsOutputValue) value,ps,iDimension);
@@ -119,6 +120,8 @@ public class OutputToMySqlFormat extends OutputFormat<StatsBaseDimension, Output
                 e.printStackTrace();
             }
         }
+
+
 
 
         /**

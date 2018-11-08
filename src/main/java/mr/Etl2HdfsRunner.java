@@ -14,12 +14,11 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 import org.apache.log4j.Logger;
-
 import java.io.IOException;
 
 /**
- * 驱动类
- * yarn jar xxx.jar com.yaxin.bigdata.etl.mr.Etl2HdfsRunner -d 2018-11-02
+ * 驱动类 解析数据的运行类
+ * yarn jar xxx.jar com.yaxin.bigdata.etl.mr.Etl2HdfsRunner -d 2018-11-06
  */
 public class Etl2HdfsRunner implements Tool {
     private static Logger logger = Logger.getLogger(Etl2HdfsRunner.class);
@@ -28,11 +27,11 @@ public class Etl2HdfsRunner implements Tool {
     @Override
     public int run(String[] args) throws Exception {
         Configuration conf = getConf();
-
+       // conf.set("mapreduce.job.jar", "F:\\IdeaProjects\\yaxin_analysic\\target\\yaxin_analysic-1.0.jar");
         //处理传入的参数
         handleArgs(conf,args);
 
-        Job job = Job.getInstance(conf, "Etl2Hdfs");
+        Job job = Job.getInstance(conf, "HdfsRunner");
 
         job.setJarByClass(Etl2HdfsRunner.class);
 
@@ -85,11 +84,12 @@ public class Etl2HdfsRunner implements Tool {
         String[] fields = date.split("-");
         String month = fields[1];
         String day = fields[2];
-
+        //System.out.println(day);
         try {
             FileSystem fs = FileSystem.get(job.getConfiguration());
-            Path inPath = new Path("/logs/" +month + "/" + day);
+            Path inPath = new Path("/logs1/" +month + "/" + day);
             Path outPath = new Path("/ods/" +month + "/" + day);
+           /// Path outPath = new Path("F:\\git\\LogOut1");
 
             //判断输入路径是否存在
             if(fs.exists(inPath)){

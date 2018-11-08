@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+    <property>
+        <name>writter_new_user</name>
+        <value>mr.newuser.NewUserOutputWritter</value>
+    </property>
+
+    <property>
+        <name>writter_browser_new_user</name>
+        <value>mr.newuser.BrowserNewUserOutputWritter</value>
+    </property>
+
+    <property>
+        <name>writter_active_user</name>
+        <value>mr.activeuser.ActiveUserOutWritter</value>
+    </property>
+
+    <property>
+        <name>writter_browser_active_user</name>
+        <value>mr.activeuser.BrowserActiveUserOutWritter</value>
+    </property>
+
+    <property>
+    <name>writter_active_member</name>
+    <value>mr.am.ActiveMemberOutputWritter</value>
+</property>
+
+    <property>
+        <name>writter_browser_active_member</name>
+        <value>am.ActiveMemberOutputWritter</value>
+    </property>
+
+    <property>
+        <name>writter_new_member</name>
+        <value>mr.nm.NewMemberOutputWritter</value>
+    </property>
+
+    <property>
+        <name>writter_browser_new_member</name>
+        <value>mr.nm.NewMemberOutputWritter</value>
+    </property>
+
+    <property>
+        <name>writter_member_info</name>
+        <value>mr.nm.NewMemberOutputWritter</value>
+    </property>
+
+    <property>
+        <name>writter_session</name>
+        <value>mr.seesion.SessionOutputWritter</value>
+    </property>
+
+    <property>
+        <name>writter_browser_session</name>
+        <value>mr.seesion.SessionOutputWritter</value>
+    </property>
+
+    <property>
+        <name>writter_hourly_active_user</name>
+        <value>mr.au.ActiveUserOutputWritter</value>
+    </property>
+
+    <property>
+        <name>writter_local</name>
+        <value>mr.local.LocalWriter</value>
+    </property>
+
+</configuration>

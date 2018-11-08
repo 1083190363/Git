@@ -47,6 +47,7 @@ public class BrowserDimension extends BaseDimension{
         * @param []
         * @return dimension.base.BrowserDimension
         */
+        //某个时间某一平台的所有维度,例如HChrome访问的,不管版本
         if (StringUtils.isEmpty(browerName)){
             browerName = browerVersion = GlobalConstants.DEFAULT_VALUE;
         }
