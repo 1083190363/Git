@@ -147,7 +147,6 @@ public class NewUserRunner implements Tool {
         int nowDateDimensionId = -1;
         int yesterdayDateDimensionId = -1;
         //System.out.println(nowDateDiemnsion+"111111111111");
-
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -186,7 +185,7 @@ public class NewUserRunner implements Tool {
                     }
                     //存储
                     map.put(key,newTotalUsers);
-                    map.size();
+                   // map.size();
                 }
             }
             //更新
@@ -194,7 +193,6 @@ public class NewUserRunner implements Tool {
                // System.out.println(map.size()+"大小");
                 for (Map.Entry<String,Integer> en:map.entrySet()){
                     ps = conn.prepareStatement(conf.get("other_new_total_browser_user_update_sql"));
-
                     //赋值
                     String[] fields = en.getKey().split("_" );
                     ps.setInt(1,nowDateDimensionId);

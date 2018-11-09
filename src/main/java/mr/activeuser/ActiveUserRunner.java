@@ -97,14 +97,14 @@ public class ActiveUserRunner implements Tool {
 
         //设置输入参数
         this.handleInputOutput(job);
-        this.computeNewTotalUser(job);
-        // return job.waitForCompletion(true)? 0:1;
-        if(job.waitForCompletion(true)){
-            this.computeNewTotalUser(job);//修改1
-            return 0;
-        }else{
-            return 1;
-        }
+       // this.computeNewTotalUser(job);
+         return job.waitForCompletion(true)? 0:1;
+//        if(job.waitForCompletion(true)){
+//            this.computeNewTotalUser(job);//修改1
+//            return 0;
+//        }else{
+//            return 1;
+//        }
     }
 
     //修改1
@@ -115,82 +115,82 @@ public class ActiveUserRunner implements Tool {
      * 2、当对应时间维度Id都大于0，则正常计算：查询前一天的新增总用户，获取当天的新增用户
      * @param job
      */
-    private void computeNewTotalUser(Job job) {
-        /**
-         *  1、根据运行当天获取日期
-         *  2、获取日期和前一天的对应的时间维度
-         *  3、根据时间维度获取对应的时间维度ID
-         *  4、根据前天的时间维度Id获取前天的新增总用户，根据当天的时间维度Id获取当天的新增用户
-         *  5、更新当天的新增总用户
-         *  6、同一维度前一天？？
-         */
-
-
-        String date = job.getConfiguration().get(GlobalConstants.RUNNING_DATE);
-        long nowday = TimeUtil.parseString2Long(date);
-        long yesterday = nowday - GlobalConstants.DAY_OF_MILLSECOND;
-
-        //获取时间维度
-        DateDimension nowDateDiemnsion = DateDimension.buildDate(nowday, DateEnum.DAY);
-        DateDimension yesterdayDateDiemnsion = DateDimension.buildDate(yesterday,DateEnum.DAY);
-
-        IDimension iDimension = new IDimensionImpl();
-        //获取时间维度Id
-        int nowDateDimensionId = -1;
-        int yesterdayDateDimensionId = -1;
-        //System.out.println(nowDateDiemnsion+"111111111111");
-
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            nowDateDimensionId = iDimension.getDimensionIdByObject(nowDateDiemnsion);
-            yesterdayDateDimensionId = iDimension.getDimensionIdByObject(yesterdayDateDiemnsion);
-
-            conn = JdbcUtil.getConn();
-            Map<String,Integer> map = new HashMap<String,Integer>();
-            //开始判断维度Id是否正确
-            //System.out.println("哈哈哈");
-            if(nowDateDimensionId > 0){
-                ps = conn.prepareStatement(conf.get("other_new_total_browser_user_now_sql"));
-                ps.setInt(1,nowDateDimensionId);
-                rs = ps.executeQuery();
-                while (rs.next()) {
-                    int platformId = rs.getInt("platform_dimension_id");
-                    int browserId = rs.getInt("browser_dimension_id");
-                    int newUsers = rs.getInt("new_install_users");
-                    map.put(platformId+"_"+browserId,newUsers);
-                }
-            }
-
-
-
-            //更新
-            if(map.size() > 0){
-                System.out.println(map.size()+"大小");
-                for (Map.Entry<String,Integer> en:map.entrySet()){
-                    ps = conn.prepareStatement(conf.get("other_new_total_browser_user_update_sql"));
-
-                    //赋值
-                    String[] fields = en.getKey().split("_");
-                    ps.setInt(1,nowDateDimensionId);
-                    ps.setInt(2,Integer.parseInt(fields[0]));
-                    ps.setInt(3,Integer.parseInt(fields[1]));
-                    ps.setInt(4,en.getValue());
-                    ps.setString(5,conf.get(GlobalConstants.RUNNING_DATE));
-                    ps.setInt(6,en.getValue());
-                    //执行更新
-                    ps.execute();
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            JdbcUtil.close(conn,ps,rs);
-        }
-
-    }
+//    private void computeNewTotalUser(Job job) {
+//        /**
+//         *  1、根据运行当天获取日期
+//         *  2、获取日期和前一天的对应的时间维度
+//         *  3、根据时间维度获取对应的时间维度ID
+//         *  4、根据前天的时间维度Id获取前天的新增总用户，根据当天的时间维度Id获取当天的新增用户
+//         *  5、更新当天的新增总用户
+//         *  6、同一维度前一天？？
+//         */
+//
+//
+//        String date = job.getConfiguration().get(GlobalConstants.RUNNING_DATE);
+//        long nowday = TimeUtil.parseString2Long(date);
+//        long yesterday = nowday - GlobalConstants.DAY_OF_MILLSECOND;
+//
+//        //获取时间维度
+//        DateDimension nowDateDiemnsion = DateDimension.buildDate(nowday, DateEnum.DAY);
+//        DateDimension yesterdayDateDiemnsion = DateDimension.buildDate(yesterday,DateEnum.DAY);
+//
+//        IDimension iDimension = new IDimensionImpl();
+//        //获取时间维度Id
+//        int nowDateDimensionId = -1;
+//        int yesterdayDateDimensionId = -1;
+//        //System.out.println(nowDateDiemnsion+"111111111111");
+//
+//        Connection conn = null;
+//        PreparedStatement ps = null;
+//        ResultSet rs = null;
+//        try {
+//            nowDateDimensionId = iDimension.getDimensionIdByObject(nowDateDiemnsion);
+//            yesterdayDateDimensionId = iDimension.getDimensionIdByObject(yesterdayDateDiemnsion);
+//
+//            conn = JdbcUtil.getConn();
+//            Map<String,Integer> map = new HashMap<String,Integer>();
+//            //开始判断维度Id是否正确
+//            //System.out.println("哈哈哈");
+//            if(nowDateDimensionId > 0){
+//                ps = conn.prepareStatement(conf.get("other_new_total_browser_user_now_sql"));
+//                ps.setInt(1,nowDateDimensionId);
+//                rs = ps.executeQuery();
+//                while (rs.next()) {
+//                    int platformId = rs.getInt("platform_dimension_id");
+//                    int browserId = rs.getInt("browser_dimension_id");
+//                    int newUsers = rs.getInt("new_install_users");
+//                    map.put(platformId+"_"+browserId,newUsers);
+//                }
+//            }
+//
+//
+//
+//            //更新
+//            if(map.size() > 0){
+//                System.out.println(map.size()+"大小");
+//                for (Map.Entry<String,Integer> en:map.entrySet()){
+//                    ps = conn.prepareStatement(conf.get("other_new_total_browser_user_update_sql"));
+//
+//                    //赋值
+//                    String[] fields = en.getKey().split("_");
+//                    ps.setInt(1,nowDateDimensionId);
+//                    ps.setInt(2,Integer.parseInt(fields[0]));
+//                    ps.setInt(3,Integer.parseInt(fields[1]));
+//                    ps.setInt(4,en.getValue());
+//                    ps.setString(5,conf.get(GlobalConstants.RUNNING_DATE));
+//                    ps.setInt(6,en.getValue());
+//                    //执行更新
+//                    ps.execute();
+//                }
+//            }
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }finally {
+//            JdbcUtil.close(conn,ps,rs);
+//        }
+//
+//    }
 
     /**
      * 参数处理,将接收到的日期存储在conf中，以供后续使用
