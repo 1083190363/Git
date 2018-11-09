@@ -43,7 +43,6 @@ public class ActiveUserRunner implements Tool {
 
     private static final Logger logger = Logger.getLogger(NewUserRunner.class);
     private Configuration conf = new Configuration();
-
     //主函数---入口
     public static void main(String[] args){
         try {
@@ -227,7 +226,7 @@ public class ActiveUserRunner implements Tool {
 
         try {
             FileSystem fs = FileSystem.get(job.getConfiguration());
-            Path inpath = new Path("/ods/" + month + "/" + day);
+            Path inpath = new Path("/ods/" + 11 + "/" + "06");
             if(fs.exists(inpath)){
                 FileInputFormat.addInputPath(job,inpath);
             }else{

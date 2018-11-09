@@ -74,14 +74,13 @@ public class NewUserMapper extends Mapper<LongWritable,Text,StatsUserDimension,T
         if(StringUtils.isNotEmpty(en) && en.equals(Constants.EventEnum.LANUCH.alias)){
                 //获取想要的字段
                 String serverTime = fields[1];
-            System.out.println(serverTime);
-            String platform = fields[13];
+            // System.out.println(serverTime);
+                String platform = fields[13];
                 String uuid = fields[3];
                 String browserName = fields[24];
                 String browserVersion = fields[25];
 
-
-            if(StringUtils.isEmpty(serverTime) || StringUtils.isEmpty(uuid)){
+            if(StringUtils.isEmpty(serverTime) || uuid.equals("null")){
                 logger.info("serverTime & uuid is null serverTime:"+serverTime+".uuid"+uuid);
                 return;
             }
@@ -96,7 +95,6 @@ public class NewUserMapper extends Mapper<LongWritable,Text,StatsUserDimension,T
             statsCommonDimension.setDateDimension(dateDimension);
             statsCommonDimension.setPlatformDimension(platformDimension);
             System.out.println(statsCommonDimension);
-//            System.out.println("hahahahah");
             //用户模块新增用户
             //设置默认的浏览器对象(因为新增用户指标并不需要浏览器维度，所以赋值为空)
             BrowserDimension defaultBrowserDimension = new BrowserDimension("","");

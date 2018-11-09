@@ -21,7 +21,6 @@
             from `stats_device_browser`
             where `date_dimension_id` = ?</value>
     </property>
-
     <property>
         <name>other_new_total_browser_user_update_sql</name>
         <value>insert into `stats_device_browser`(

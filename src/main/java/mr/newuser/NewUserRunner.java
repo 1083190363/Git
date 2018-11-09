@@ -105,8 +105,8 @@ public class NewUserRunner implements Tool {
 
         //设置输入参数
         this.handleInputOutput(job);
-        //this.computeNewTotalUser(job);
-        //return job.waitForCompletion(true)? 0:1;
+       // this.computeNewTotalUser(job);
+      //  return job.waitForCompletion(true)? 0:1;
         if(job.waitForCompletion(true)){
             this.computeNewTotalUser(job);//修改1
             return 0;
@@ -153,10 +153,11 @@ public class NewUserRunner implements Tool {
         ResultSet rs = null;
         try {
             nowDateDimensionId = iDimension.getDimensionIdByObject(nowDateDiemnsion);
+           // System.out.println(nowDateDimensionId);
             yesterdayDateDimensionId = iDimension.getDimensionIdByObject(yesterdayDateDiemnsion);
 
             conn = JdbcUtil.getConn();
-            Map<String,Integer> map = new HashMap<String,Integer>();
+            Map<String,Integer> map = new HashMap<String,Integer>() ;
             //开始判断维度Id是否正确
             //System.out.println("哈哈哈");
             if(nowDateDimensionId > 0){
@@ -185,10 +186,9 @@ public class NewUserRunner implements Tool {
                     }
                     //存储
                     map.put(key,newTotalUsers);
+                    map.size();
                 }
             }
-
-
             //更新
             if(map.size() > 0){
                // System.out.println(map.size()+"大小");
@@ -196,7 +196,7 @@ public class NewUserRunner implements Tool {
                     ps = conn.prepareStatement(conf.get("other_new_total_browser_user_update_sql"));
 
                     //赋值
-                    String[] fields = en.getKey().split("_");
+                    String[] fields = en.getKey().split("_" );
                     ps.setInt(1,nowDateDimensionId);
                     ps.setInt(2,Integer.parseInt(fields[0]));
                     ps.setInt(3,Integer.parseInt(fields[1]));
@@ -250,7 +250,7 @@ public class NewUserRunner implements Tool {
 
         try {
             FileSystem fs = FileSystem.get(job.getConfiguration());
-            Path inpath = new Path("/ods/" + month + "/" + day);
+            Path inpath = new Path("/ods/" + 11 + "/" + "06");
             if(fs.exists(inpath)){
                 FileInputFormat.addInputPath(job,inpath);
             }else{

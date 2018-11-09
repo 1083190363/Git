@@ -24,12 +24,12 @@
 
     <property>
     <name>writter_active_member</name>
-    <value>mr.am.ActiveMemberOutputWritter</value>
+    <value>mr.activemember.ActiveMemberOutWritter</value>
 </property>
 
     <property>
         <name>writter_browser_active_member</name>
-        <value>am.ActiveMemberOutputWritter</value>
+        <value>mr.activemember.BrowserActiveMemberOutWritter</value>
     </property>
 
     <property>

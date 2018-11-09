@@ -63,7 +63,7 @@ public class ActiveUserMapper extends Mapper<LongWritable, Text, StatsUserDimens
             String browserName = fields[24];
             String browserVersion = fields[25];
 
-            if(StringUtils.isEmpty(serverTime) || StringUtils.isEmpty(uuid)){
+            if(StringUtils.isEmpty(serverTime) || uuid.equals("null")){
                 logger.info("serverTime & uuid is null serverTime:"+serverTime+".uuid"+uuid);
                 return;
             }

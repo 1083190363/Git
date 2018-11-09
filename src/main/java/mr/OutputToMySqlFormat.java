@@ -98,7 +98,6 @@ public class OutputToMySqlFormat extends OutputFormat<StatsBaseDimension, Output
                 int count = 1;
                 this.batch.put(kpi,count);
                 count++;
-
                 //为ps赋值准备
                 String className = conf.get("writter_"+kpi.kpiName);
                // System.out.println("断点");
@@ -114,14 +113,10 @@ public class OutputToMySqlFormat extends OutputFormat<StatsBaseDimension, Output
                     this.conn.commit(); //提交批处理执行
                     batch.remove(kpi); //将执行完的ps移除掉
                 }
-
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
-
 
 
         /**
