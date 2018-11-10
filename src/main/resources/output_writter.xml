@@ -34,27 +34,27 @@
 
     <property>
         <name>writter_new_member</name>
-        <value>mr.nm.NewMemberOutputWritter</value>
+        <value>mr.newmember.NewMemberOutPutWritter</value>
     </property>
 
     <property>
         <name>writter_browser_new_member</name>
-        <value>mr.nm.NewMemberOutputWritter</value>
+        <value>mr.newmember.BrowserNewMemberOutPutWritter</value>
     </property>
 
     <property>
         <name>writter_member_info</name>
-        <value>mr.nm.NewMemberOutputWritter</value>
+        <value>mr.newmember.NewMemberOutPutWritter</value>
     </property>
 
     <property>
         <name>writter_session</name>
-        <value>mr.seesion.SessionOutputWritter</value>
+        <value>mr.session.SessionsOutputWritter</value>
     </property>
 
     <property>
         <name>writter_browser_session</name>
-        <value>mr.seesion.SessionOutputWritter</value>
+        <value>mr.session.BrowserSessionsOutputWritter</value>
     </property>
 
     <property>
