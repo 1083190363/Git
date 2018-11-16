@@ -44,10 +44,10 @@ public class IDimensionImpl implements IDimension {
                 sqls = buildDateSqls(dimension);
             } else if(dimension instanceof BrowserDimension){
                 sqls = buildBrowserSqls(dimension);
-//            } else if(dimension instanceof LocationDimension){
-//                sqls = buildLocalSqls(dimension);
-//            } else if(dimension instanceof EventDimension){
-//                sqls = buildEventSqls(dimension);
+            }else if(dimension instanceof LocationDimension){
+                sqls = buildLocalSqls(dimension);
+            }else if(dimension instanceof EventDimension){
+                sqls = buildEventSqls(dimension);
             }
 
             //获取jdbc的连接
@@ -141,17 +141,17 @@ public class IDimensionImpl implements IDimension {
             PlatformDimension platform = (PlatformDimension)dimension;
             sb.append(platform.getPlatformName());
             //new_user
-//        } else if(dimension instanceof LocationDimension){
-//            LocationDimension local = (LocationDimension) dimension;
-//            sb.append("local_");
-//            sb.append(local.getCountry());
-//            sb.append(local.getProvince());
-//            sb.append(local.getCity());
-//        } else if(dimension instanceof EventDimension){
-//            EventDimension event = (EventDimension) dimension;
-//            sb.append("event_");
-//            sb.append(event.getCategory());
-//            sb.append(event.getAction());
+        } else if(dimension instanceof LocationDimension){
+            LocationDimension local = (LocationDimension) dimension;
+            sb.append("local_");
+            sb.append(local.getCountry());
+            sb.append(local.getProvince());
+            sb.append(local.getCity());
+        } else if(dimension instanceof dimension.base.EventDimension){
+            dimension.base.EventDimension event = (dimension.base.EventDimension) dimension;
+            sb.append("event_");
+            sb.append(event.getCategory());
+            sb.append(event.getAction());
         }
         return sb != null ? sb.toString() : null;
     }
@@ -218,15 +218,15 @@ public class IDimensionImpl implements IDimension {
                 BrowserDimension browser = (BrowserDimension)dimension;
                 ps.setString(++i,browser.getBrowerName());
                 ps.setString(++i,browser.getBrowerVersion());
-//            } else if(dimension instanceof LocationDimension){
-//                LocationDimension local = (LocationDimension) dimension;
-//                ps.setString(++i,local.getCountry());
-//                ps.setString(++i,local.getProvince());
-//                ps.setString(++i,local.getCity());
-//            } else if(dimension instanceof EventDimension){
-//                EventDimension event = (EventDimension) dimension;
-//                ps.setString(++i,event.getCategory());
-//                ps.setString(++i,event.getAction());
+            } else if(dimension instanceof LocationDimension){
+                LocationDimension local = (LocationDimension) dimension;
+                ps.setString(++i,local.getCountry());
+                ps.setString(++i,local.getProvince());
+                ps.setString(++i,local.getCity());
+            } else if(dimension instanceof dimension.base.EventDimension){
+                dimension.base.EventDimension event = (dimension.base.EventDimension) dimension;
+                ps.setString(++i,event.getCategory());
+                ps.setString(++i,event.getAction());
             }
         } catch (SQLException e) {
             e.printStackTrace();

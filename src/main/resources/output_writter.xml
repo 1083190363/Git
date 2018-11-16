@@ -59,12 +59,16 @@
 
     <property>
         <name>writter_hourly_active_user</name>
-        <value>mr.au.ActiveUserOutputWritter</value>
+        <value>mr.hourly.HourlyActiveUserOutWritter</value>
     </property>
 
     <property>
+        <name>writter_pageview</name>
+        <value>mr.pv.PageViewOutputWritter</value>
+    </property>
+    <property>
         <name>writter_local</name>
-        <value>mr.local.LocalWriter</value>
+        <value>mr.local.LocalOutWritter</value>
     </property>
 
 </configuration>

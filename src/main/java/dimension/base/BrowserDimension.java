@@ -4,7 +4,6 @@ package dimension.base;
 
 import common.GlobalConstants;
 import org.apache.commons.lang.StringUtils;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

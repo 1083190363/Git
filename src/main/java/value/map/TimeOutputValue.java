@@ -39,7 +39,6 @@ public class TimeOutputValue extends StatsOutputValue {
     }
 
     public String getId() {
-        System.out.println(id.toString());
         return id;
     }
 

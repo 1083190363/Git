@@ -1,4 +1,4 @@
-package mr.newuser;
+package mr.pv;
 
 
 import common.KpiType;
@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import value.StatsUserDimension;
 import value.map.TimeOutputValue;
 import value.reduce.OutputValue;
+
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,8 +21,8 @@ import java.util.Set;
  * @create 2018/9/20
  * @since 1.0.0
  */
-public class NewUserReducer extends Reducer<StatsUserDimension,TimeOutputValue,StatsUserDimension, OutputValue> {
-    private static final Logger logger = Logger.getLogger(NewUserReducer.class);
+public class PageViewReducer extends Reducer<StatsUserDimension,TimeOutputValue,StatsUserDimension, OutputValue> {
+    private static final Logger logger = Logger.getLogger(PageViewReducer.class);
     private OutputValue v = new OutputValue();
     private Set unique = new HashSet();//用于去重，利用HashSet
     private MapWritable map = new MapWritable();
@@ -29,9 +30,9 @@ public class NewUserReducer extends Reducer<StatsUserDimension,TimeOutputValue,S
     @Override
     protected void reduce(StatsUserDimension key, Iterable<TimeOutputValue> values, Context context) throws IOException, InterruptedException {
         map.clear();//清空map，因为map是在外面定义的，每一个key都需要调用一次reduce方法，也就是说上次操作会保留map中的key-value
-
+        int  count = 0;
         for(TimeOutputValue tv : values){//循环
-            this.unique.add(tv.getId());//将uuid取出添加到set中进行去重操作
+            count++;
         }
 
         //构造输出的value
@@ -44,7 +45,7 @@ public class NewUserReducer extends Reducer<StatsUserDimension,TimeOutputValue,S
 //        }
 
         //通过集合的size统计新增用户uuid的个数，前面的key可以随便设置，就是用来标识新增用户个数的（比较难理解）
-        this.map.put(new IntWritable(-1),new IntWritable(this.unique.size()));
+        this.map.put(new IntWritable(-1),new IntWritable(count));
         this.v.setValue(this.map);
         //输出
         //System.out.println(("Reducer000000000000000000000000000000")+key);

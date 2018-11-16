@@ -1,4 +1,4 @@
-package mr.session;
+package mr.hourly;
 
 import common.DateEnum;
 import common.KpiType;
@@ -19,22 +19,24 @@ import java.io.IOException;
 
 /**
  * @ProjectName: git
- * @Package: mr.session
- * @ClassName: SessionMapper
- * @Description: 会话的Mapper类
+ * @Package: mr.activeuser
+ * @ClassName: ActiveUserMapper
+ * @Description: 活跃用户的mapper类
  * @Author: CaoXueCheng
  * @CreateDate: 2018/11/6 20:55
  * @UpdateUser: CaoXueCheng
  * @UpdateDate: 2018/11/6 20:55
  * @Version: 1.0
  */
-public class SessionMapper extends Mapper<LongWritable, Text, StatsUserDimension, TimeOutputValue> {
-    private static final Logger logger = Logger.getLogger(SessionMapper.class);
+public class HourlyActiveUserMapper extends Mapper<LongWritable, Text, StatsUserDimension, TimeOutputValue> {
+    private static final Logger logger = Logger.getLogger(HourlyActiveUserMapper.class);
     private StatsUserDimension k = new StatsUserDimension();
     private TimeOutputValue v = new TimeOutputValue();
 
-    private KpiDimension sessionKpi = new KpiDimension(KpiType.SESSION.kpiName);
-    private KpiDimension browserSessionKpi = new KpiDimension(KpiType.BROWSER_SESSION.kpiName);
+    private KpiDimension activeUserKpi = new KpiDimension(KpiType.ACTIVE_USER.kpiName);
+    private KpiDimension activeBrowserUserKpi = new KpiDimension(KpiType.BROWSER_ACTIVE_USER.kpiName);
+    private KpiDimension hourlyactiveUserKpi = new KpiDimension(KpiType.HOURLY_ACTIVE_USER.kpiName);
+
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         super.setup(context);
@@ -54,44 +56,45 @@ public class SessionMapper extends Mapper<LongWritable, Text, StatsUserDimension
        // if(StringUtils.isNotEmpty(en) && en.equals(Constants.EventEnum.LANUCH.alias)) {
             //获取想要的字段
             String serverTime = fields[1];
-            String sessionId = fields[5];
+            String uuid = fields[3];
             String platform = fields[13];
             String browserName = fields[24];
             String browserVersion = fields[25];
 
-            if(StringUtils.isEmpty(serverTime) || sessionId.equals("null")){
-                logger.info("serverTime & uuid is null serverTime:"+serverTime+".sessionId"+sessionId);
+            if(StringUtils.isEmpty(serverTime) || uuid.equals("null")){
+                logger.info("serverTime & uuid is null serverTime:"+serverTime+".uuid"+uuid);
                 return;
             }
-
             //构造输出的key
             long stime = Long.valueOf(serverTime);
             PlatformDimension platformDimension = PlatformDimension.getInstance(platform);
             DateDimension dateDimension = DateDimension.buildDate(stime, DateEnum.DAY);
             StatsCommonDimension statsCommonDimension = this.k.getStatsCommonDimension();
             //为StatsCommonDimension设值
-            statsCommonDimension.setDateDimension(dateDimension);
             statsCommonDimension.setPlatformDimension(platformDimension);
+            statsCommonDimension.setDateDimension(dateDimension);
             //stats_user表 活跃用户
             BrowserDimension defaultBrowserDimension = new BrowserDimension("","");
-            statsCommonDimension.setKpiDimension(sessionKpi);
+            statsCommonDimension.setKpiDimension(activeUserKpi);
             this.k.setBrowserDimension(defaultBrowserDimension);
             this.k.setStatsCommonDimension(statsCommonDimension);
-            this.v.setId(sessionId);
-            //一定要设置 根据这个计算时间长度
-            this.v.setTime(stime);
+            this.v.setId(uuid);
             context.write(this.k,this.v);//输出
 
+            //用于小时计算的输出
+           statsCommonDimension.setKpiDimension(hourlyactiveUserKpi);
+          // statsCommonDimension.setPlatformDimension(platformDimension);
+           this.k.setStatsCommonDimension(statsCommonDimension);
+           this.v.setId(uuid);
+           context.write(this.k,this.v);
             //stats_device_browser表  活跃浏览器用户
-            statsCommonDimension.setKpiDimension(browserSessionKpi);
+            statsCommonDimension.setKpiDimension(activeBrowserUserKpi);
             BrowserDimension browserDimension = new BrowserDimension(browserName,browserVersion);
             this.k.setBrowserDimension(browserDimension);
             this.k.setStatsCommonDimension(statsCommonDimension);
-            this.v.setId(sessionId);
-            //一定要设置 根据这个时间计算时间长度
-            this.v.setTime(stime);
+            this.v.setId(uuid);
             context.write(this.k,this.v);//输出
-       // }
+        //}
     }
 
     @Override
