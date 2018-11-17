@@ -111,8 +111,6 @@ public class Etl2HdfsMapper extends Mapper<LongWritable, Text,LogWritable, NullW
             }
             outputRecords++;
             context.write(k,NullWritable.get());
-            System.out.println(("哈哈哈哈哈哈哈_____________"));
-            System.out.println(k);
         } catch (Exception e) {
             logger.error("etl最终输出错误",e);
         }

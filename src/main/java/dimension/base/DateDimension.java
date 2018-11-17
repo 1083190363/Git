@@ -234,7 +234,6 @@ public class DateDimension extends BaseDimension{
             calendar.set(year,month -1,1);
 
             return new DateDimension(year,season,month,0,1,type.dataType,calendar.getTime());
-
         }
 
         int month = TimeUtil.getDateInfo(time,DateEnum.MONTH);

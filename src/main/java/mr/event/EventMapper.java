@@ -1,4 +1,4 @@
-package mr.pv;
+package mr.event;
 
 import common.Constants;
 import common.DateEnum;
@@ -19,21 +19,13 @@ import value.map.TimeOutputValue;
 import java.io.IOException;
 
 /**
- * 〈一句话功能简述〉<br>
- * 〈NewUserMapper---mapper函数 简单的封装〉
- *
  * @author 14751
  * @create 2018/9/19
  * @since 1.0.0
- * 用户模块下的新增用户
- *
- * 注意点：每次测试前都要清空数据库中的数据
- * 新建查询---执行所有的SQL语句
- * 如下：
-
+ * 事件的Mapper类
  */
-public class PageviewMapper extends Mapper<LongWritable,Text,StatsUserDimension,TimeOutputValue> {
-    private static final Logger logger = Logger.getLogger(PageviewMapper.class);
+public class EventMapper extends Mapper<LongWritable,Text,StatsUserDimension,TimeOutputValue> {
+    private static final Logger logger = Logger.getLogger(EventMapper.class);
     private StatsUserDimension k = new StatsUserDimension();
     private TimeOutputValue v = new TimeOutputValue();
     private KpiDimension pageViewKpi = new KpiDimension(KpiType.PAGEVIEW.kpiName);
@@ -49,7 +41,7 @@ public class PageviewMapper extends Mapper<LongWritable,Text,StatsUserDimension,
         String[] fields = line.split("\001");
         //en是事件名称
         String en = fields[2];
-        if(StringUtils.isNotEmpty(en) && en.equals(Constants.EventEnum.PAGEVIEW.alias)){
+        //if(StringUtils.isNotEmpty(en) && en.equals(Constants.EventEnum.LANUCH.alias)){
                 //获取想要的字段
                 String serverTime = fields[1];
             // System.out.println(serverTime);
@@ -78,5 +70,5 @@ public class PageviewMapper extends Mapper<LongWritable,Text,StatsUserDimension,
             this.v.setId(url);
             context.write(this.k,this.v);//输出
         }
-    }
+   // }
 }

@@ -1,0 +1,129 @@
+1.打包
+2.上传jar包到hdfs上
+3.创建永久函数
+create function date_convert as 'dimension.hive.en.DateDimensionUDF' using jar "hdfs://hadoop01:9000/user/jars/git-1.0-SNAPSHOT.jar";
+create function event_convert as 'dimension.hive.en.EventDimensionUDF' using jar "hdfs://hadoop01:9000/user/jars/git-1.0-SNAPSHOT.jar";
+create function platform_convert as 'dimension.hive.en.PlatformDimensionUDF' using jar "hdfs://hadoop01:9000/user/jars/git-1.0-SNAPSHOT.jar";
+4.创建表映射原始数据
+create table if not exists logs(
+ver string,
+s_time string,
+en string,
+u_ud string,
+u_mid string,
+u_sd string,
+c_time string,
+l string,
+b_iev string,
+b_rst string,
+p_url string,
+p_ref string,
+tt string,
+pl string,
+ip string,
+oid string,
+on_ string,
+cua string,
+cut string,
+pt string,
+ca string,
+ac string,
+kv_ string,
+du string,
+browserName string,
+browserVersion string,
+osName string,
+osVersion string,
+country string,
+province string,
+city string
+)
+partitioned by(month string,day string)
+row format delimited
+fields terminated by '\001'
+;
+导入数据:
+load data inpath '/ods/11/06' into table logs partition(month = 11,day = 06);
+4.创建hive表映射每一天的数据,创建分区表
+create table if not exists dw_en(
+s_time bigint,
+pl string,
+ca string,
+ac string
+)
+partitioned by(month string,day string)
+row format delimited
+fields terminated by '\001'
+stored as orc
+;
+5.通过logs表将数据导入dw_en
+from logs
+insert into table dw_en partition(month='11',day='06')
+select s_time,pl,ca,ac
+where month = '11'
+and day = '06'
+;
+6.创建结果表 stats_event
+CREATE TABLE if not exists stats_event(
+platform_dimension_id int,
+date_dimension_id int,
+event_dimension_id int,
+times int,
+created string
+)
+;
+7.将时间戳转换成时间
+正常时间戳只能转换10位 所以除以1000,然后进行强转成bigint类型
+例子:
+select from_unixtime(cast(1535531206665/1000 as bigint),"yyyy-MM-dd");
+转换语句如下
+select
+from_unixtime(cast(d.s_time/1000 as bigint),"yyyy-MM-dd"),
+d.pl,d.ca,d.ac,count(1)
+from dw_en d
+where d.pl is not null
+and d.month = '11'
+and d.day = '06'
+group by d.s_time,d.pl,d.ca,d.ac;
+8.创建临时表将上面的查询结果导入临时表中
+语句如下:
+with tmp as(
+select
+from_unixtime(cast(d.s_time/1000 as bigint),"yyyy-MM-dd") dt,
+d.pl pl,d.ca ca,d.ac ac,count(1) count
+from dw_en d
+where d.pl is not null
+and d.month = '11'
+and d.day = '06'
+group by d.s_time,d.pl,d.ca,d.ac
+)
+from(
+select pl as pl,dt as dt,ca as ca,ac as ac,count(1)as ct from tmp group by pl,dt,ca,ac union all
+select pl as pl,dt as dt,ca as ca,'all' as ac,count(1) as ct from tmp group by pl,dt,ca union all
+select pl as pl,dt as dt,'all' as ca,'all' as ac,count(1) as ct from tmp group by pl,dt union all
+select 'all' as pl,dt as dt,ca as ca,ac as ac,count(1) as ct from tmp group by dt,ca,ac union all
+select 'all' as pl,dt as dt,ca as ca,'all' as ac,count(1) as ct from tmp group by dt,ca union all
+select 'all' as pl,dt as dt,'all' as ca,'all' as ac,count(1) as ct from tmp group by dt
+)as tmp2
+insert into stats_event
+select date_convert(dt),platform_convert(pl),event_convert(ca,ac),sum(ct),dt
+group by pl,dt,ca,ac
+;
+9.将数据用sqoop导入mysql中
+sqoop export --connect jdbc:mysql://hadoop01:3306/result \
+--username hadoop --password hadoop --table stats_event \
+--export-dir hdfs://hadoop01:9000/user/hive/warehouse/pv.db/stats_event/* \
+--input-fields-terminated-by '\001' \
+--update-key platform_dimension_id,date_dimension_id,event_dimension_id \
+--update-mode allowinsert \
+;
+10.将整个封装成一个shell脚本
+
+
+
+
+
+
+
+
+

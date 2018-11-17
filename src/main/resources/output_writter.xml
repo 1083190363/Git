@@ -70,5 +70,8 @@
         <name>writter_local</name>
         <value>mr.local.LocalOutWritter</value>
     </property>
-
+    <property>
+        <name>writter_event</name>
+        <value>mr.event.EventOutWritter</value>
+    </property>
 </configuration>

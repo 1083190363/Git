@@ -63,7 +63,6 @@ public class SessionMapper extends Mapper<LongWritable, Text, StatsUserDimension
                 logger.info("serverTime & uuid is null serverTime:"+serverTime+".sessionId"+sessionId);
                 return;
             }
-
             //构造输出的key
             long stime = Long.valueOf(serverTime);
             PlatformDimension platformDimension = PlatformDimension.getInstance(platform);

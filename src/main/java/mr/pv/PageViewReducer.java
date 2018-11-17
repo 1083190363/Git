@@ -24,7 +24,7 @@ import java.util.Set;
 public class PageViewReducer extends Reducer<StatsUserDimension,TimeOutputValue,StatsUserDimension, OutputValue> {
     private static final Logger logger = Logger.getLogger(PageViewReducer.class);
     private OutputValue v = new OutputValue();
-    private Set unique = new HashSet();//用于去重，利用HashSet
+    //private Set unique = new HashSet();//用于去重，利用HashSet
     private MapWritable map = new MapWritable();
 
     @Override
@@ -51,7 +51,7 @@ public class PageViewReducer extends Reducer<StatsUserDimension,TimeOutputValue,
         //System.out.println(("Reducer000000000000000000000000000000")+key);
       //  System.out.println(this.unique.size()+"vvvvvvvvvvvvvv");
         context.write(key,this.v);
-        this.unique.clear();//清空操作
+       // this.unique.clear();//清空操作
 
         /**
          * 注意点：

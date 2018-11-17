@@ -1,8 +1,8 @@
 package com.qianfeng.sdk;
 
-import com.sun.deploy.net.URLEncoder;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;

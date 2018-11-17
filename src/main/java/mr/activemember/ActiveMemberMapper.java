@@ -7,7 +7,6 @@ import dimension.base.BrowserDimension;
 import dimension.base.DateDimension;
 import dimension.base.KpiDimension;
 import dimension.base.PlatformDimension;
-import mr.activeuser.ActiveUserMapper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
