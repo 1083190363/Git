@@ -1,3 +1,5 @@
+#!/bin/bash
+#判断时间格式
 #./en.sh -n -m -d 2018-08-30
 run_date=
 until [ $# -eq 0 ]
