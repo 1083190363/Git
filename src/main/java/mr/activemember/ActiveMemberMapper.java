@@ -63,7 +63,7 @@ public class ActiveMemberMapper extends Mapper<LongWritable, Text, StatsUserDime
             logger.info("serverTime & mid is null serverTime:"+serverTime+".mid"+mid);
             return;
         }
-             System.out.println(mid+"---------------------");
+            // System.out.println(mid+"---------------------");
         //构造输出的key
         long stime = Long.valueOf(serverTime);
         PlatformDimension platformDimension = PlatformDimension.getInstance(platform);

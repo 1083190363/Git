@@ -5,7 +5,6 @@ import cz.mallat.uasparser.UASparser;
 import cz.mallat.uasparser.UserAgentInfo;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
 import java.io.IOException;
 
 public class userAgentUtil {

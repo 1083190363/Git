@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @ClassName OutputToMySqlFormat
+ * @ClassName 本地的OutputToMySqlFormat
  * @Author lyd
  * @Date $ $
  * @Vesion 1.0

@@ -67,7 +67,6 @@ public class IDimensionImpl implements IDimension {
         throw new RuntimeException("插入基础维度类异常.");
     }
 
-
     /**
      * 构建kpi的插入和查询sql语句
      * @param dimension

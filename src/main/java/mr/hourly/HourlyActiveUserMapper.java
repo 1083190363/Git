@@ -32,7 +32,6 @@ public class HourlyActiveUserMapper extends Mapper<LongWritable, Text, StatsUser
     private static final Logger logger = Logger.getLogger(HourlyActiveUserMapper.class);
     private StatsUserDimension k = new StatsUserDimension();
     private TimeOutputValue v = new TimeOutputValue();
-
     private KpiDimension activeUserKpi = new KpiDimension(KpiType.ACTIVE_USER.kpiName);
     private KpiDimension activeBrowserUserKpi = new KpiDimension(KpiType.BROWSER_ACTIVE_USER.kpiName);
     private KpiDimension hourlyactiveUserKpi = new KpiDimension(KpiType.HOURLY_ACTIVE_USER.kpiName);

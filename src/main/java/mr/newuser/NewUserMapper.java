@@ -20,10 +20,8 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 /**
- * 〈一句话功能简述〉<br>
- * 〈NewUserMapper---mapper函数 简单的封装〉
- *
- * @author 14751
+ * todo 新增用户的Mapper类
+ * @author
  * @create 2018/9/19
  * @since 1.0.0
  * 用户模块下的新增用户
@@ -56,8 +54,9 @@ public class NewUserMapper extends Mapper<LongWritable,Text,StatsUserDimension,T
     private static final Logger logger = Logger.getLogger(NewUserMapper.class);
     private StatsUserDimension k = new StatsUserDimension();
     private TimeOutputValue v = new TimeOutputValue();
-
+    //指定kpitype为new_user
     private KpiDimension newUserKpi = new KpiDimension(KpiType.NEW_USER.kpiName);
+    //指定浏览器新增用户的类型
     private KpiDimension newBrowserUserKpi = new KpiDimension(KpiType.BROWSER_NEW_USER.kpiName);
 
     @Override
@@ -66,10 +65,9 @@ public class NewUserMapper extends Mapper<LongWritable,Text,StatsUserDimension,T
         if(StringUtils.isEmpty(line)){
             return ;
         }
-
         //拆分
         String[] fields = line.split("\001");
-        //en是事件名称
+        //获取事件类型
         String en = fields[2];
         if(StringUtils.isNotEmpty(en) && en.equals(Constants.EventEnum.LANUCH.alias)){
                 //获取想要的字段
@@ -80,29 +78,34 @@ public class NewUserMapper extends Mapper<LongWritable,Text,StatsUserDimension,T
                 String browserName = fields[24];
                 String browserVersion = fields[25];
 
+                //判断时间戳和uuid是否为空值,将空值过滤掉
             if(StringUtils.isEmpty(serverTime) || uuid.equals("null")){
                 logger.info("serverTime & uuid is null serverTime:"+serverTime+".uuid"+uuid);
                 return;
             }
 
             //构造输出的key
+            //获取时间戳
             long stime = Long.valueOf(serverTime);
-            System.out.println(stime);
+            //将平台信息封装到凭条维度类中
             PlatformDimension platformDimension = PlatformDimension.getInstance(platform);
+            //将获取的时间封装到时间维度类中
             DateDimension dateDimension = DateDimension.buildDate(stime, DateEnum.DAY);
+            //将上面两个有值的公共纬度类封装到公共维度类StatsCommonDimension中
             StatsCommonDimension statsCommonDimension = this.k.getStatsCommonDimension();
             //为StatsCommonDimension设值
             statsCommonDimension.setDateDimension(dateDimension);
             statsCommonDimension.setPlatformDimension(platformDimension);
-            System.out.println(statsCommonDimension);
             //用户模块新增用户
             //设置默认的浏览器对象(因为新增用户指标并不需要浏览器维度，所以赋值为空)
             BrowserDimension defaultBrowserDimension = new BrowserDimension("","");
+            //设置kpi类型
             statsCommonDimension.setKpiDimension(newUserKpi);
             this.k.setBrowserDimension(defaultBrowserDimension);
             this.k.setStatsCommonDimension(statsCommonDimension);
             this.v.setId(uuid);
-            context.write(this.k,this.v);//输出
+            //写出
+            context.write(this.k,this.v);
 
             //浏览器模块新增用户
             statsCommonDimension.setKpiDimension(newBrowserUserKpi);

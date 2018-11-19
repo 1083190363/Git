@@ -16,7 +16,6 @@ import dimension.base.BaseDimension;
 import dimension.base.DateDimension;
 import dimension.base.KpiDimension;
 import dimension.base.PlatformDimension;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

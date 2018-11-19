@@ -14,7 +14,6 @@ package value;
 
 import dimension.base.BaseDimension;
 import dimension.base.BrowserDimension;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

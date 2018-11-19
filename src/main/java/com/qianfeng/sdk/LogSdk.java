@@ -14,7 +14,7 @@ public class LogSdk {
     //定义常量
     private static final String ver = "1.0";
     private static String platforName="java_server";
-    private static String chargeSucdess="e_cs";
+    private static String chargeSuccess="e_cs";
     private static String chargeRefund="e_cr";
     private static String sdkName="java_sdk";
     private static String requestUrl="http://192.168.137.6";
@@ -35,7 +35,7 @@ public class LogSdk {
         //mid oid 不为空
         Map<String,String> data = new HashMap<String, String>();
         if (isEmpty(flag) || flag.equals("1")){
-            data.put("en",chargeSucdess);
+            data.put("en",chargeSuccess);
         }else if (flag.equals("2")){
             data.put("en",chargeRefund);
         }

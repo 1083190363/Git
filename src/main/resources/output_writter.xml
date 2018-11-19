@@ -44,7 +44,7 @@
 
     <property>
         <name>writter_member_info</name>
-        <value>mr.newmember.NewMemberOutPutWritter</value>
+        <value>mr.newmember.MemberInfoOutPutWritter</value>
     </property>
 
     <property>

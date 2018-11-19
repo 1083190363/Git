@@ -42,13 +42,10 @@ public class NewUserReducer extends Reducer<StatsUserDimension,TimeOutputValue,S
 //        if(key.getStatsCommonDimension().getKpiDimension().getKpiName().equals(KpiType.NEW_USER.kpiName)){
 //            this.v.setKpi(KpiType.NEW_USER);
 //        }
-
         //通过集合的size统计新增用户uuid的个数，前面的key可以随便设置，就是用来标识新增用户个数的（比较难理解）
-        this.map.put(new IntWritable(-1),new IntWritable(this.unique.size()));
+        this.map.put(new IntWritable(-2),new IntWritable(this.unique.size()));
         this.v.setValue(this.map);
         //输出
-        //System.out.println(("Reducer000000000000000000000000000000")+key);
-      //  System.out.println(this.unique.size()+"vvvvvvvvvvvvvv");
         context.write(key,this.v);
         this.unique.clear();//清空操作
 

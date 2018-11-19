@@ -5,7 +5,6 @@ import common.KpiType;
 import org.apache.hadoop.io.MapWritable;
 import org.apache.hadoop.io.WritableUtils;
 import value.StatsOutputValue;
-
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;

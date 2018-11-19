@@ -71,7 +71,7 @@ public class NewMemberMapper extends Mapper<LongWritable,Text,StatsUserDimension
             //为StatsCommonDimension设值
             statsCommonDimension.setDateDimension(dateDimension);
             statsCommonDimension.setPlatformDimension(platformDimension);
-            System.out.println(statsCommonDimension);
+            //System.out.println(statsCommonDimension);
             //用户模块新增用户
             //设置默认的浏览器对象(因为新增用户指标并不需要浏览器维度，所以赋值为空)
             BrowserDimension defaultBrowserDimension = new BrowserDimension("","");
@@ -79,6 +79,7 @@ public class NewMemberMapper extends Mapper<LongWritable,Text,StatsUserDimension
             this.k.setBrowserDimension(defaultBrowserDimension);
             this.k.setStatsCommonDimension(statsCommonDimension);
             this.v.setId(u_mid);
+            this.v.setTime(stime);
             context.write(this.k,this.v);//输出
 
             //浏览器模块新增用户

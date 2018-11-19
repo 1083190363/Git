@@ -2,7 +2,6 @@ package IpAnalysis;
 
 
 import common.GlobalConstants;
-
 import java.sql.*;
 
 /**

@@ -7,7 +7,6 @@ import mr.service.IDimension;
 import mr.service.impl.IDimensionImpl;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.*;
-import org.apache.hadoop.mapreduce.lib.db.DBOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter;
 import value.StatsBaseDimension;
 import value.StatsOutputValue;
