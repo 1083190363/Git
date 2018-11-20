@@ -34,7 +34,7 @@ public class HourlyActiveUserMapper extends Mapper<LongWritable, Text, StatsUser
     private TimeOutputValue v = new TimeOutputValue();
     private KpiDimension activeUserKpi = new KpiDimension(KpiType.ACTIVE_USER.kpiName);
     private KpiDimension activeBrowserUserKpi = new KpiDimension(KpiType.BROWSER_ACTIVE_USER.kpiName);
-    private KpiDimension hourlyactiveUserKpi = new KpiDimension(KpiType.HOURLY_ACTIVE_USER.kpiName);
+    //private KpiDimension hourlyactiveUserKpi = new KpiDimension(KpiType.HOURLY_ACTIVE_USER.kpiName);
 
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
@@ -66,12 +66,13 @@ public class HourlyActiveUserMapper extends Mapper<LongWritable, Text, StatsUser
             }
             //构造输出的key
             long stime = Long.valueOf(serverTime);
+            this.v.setTime(stime);
             PlatformDimension platformDimension = PlatformDimension.getInstance(platform);
             DateDimension dateDimension = DateDimension.buildDate(stime, DateEnum.DAY);
             StatsCommonDimension statsCommonDimension = this.k.getStatsCommonDimension();
             //为StatsCommonDimension设值
-            statsCommonDimension.setPlatformDimension(platformDimension);
             statsCommonDimension.setDateDimension(dateDimension);
+            statsCommonDimension.setPlatformDimension(platformDimension);
             //stats_user表 活跃用户
             BrowserDimension defaultBrowserDimension = new BrowserDimension("","");
             statsCommonDimension.setKpiDimension(activeUserKpi);
@@ -80,18 +81,11 @@ public class HourlyActiveUserMapper extends Mapper<LongWritable, Text, StatsUser
             this.v.setId(uuid);
             context.write(this.k,this.v);//输出
 
-            //用于小时计算的输出
-           statsCommonDimension.setKpiDimension(hourlyactiveUserKpi);
-          // statsCommonDimension.setPlatformDimension(platformDimension);
-           this.k.setStatsCommonDimension(statsCommonDimension);
-           this.v.setId(uuid);
-           context.write(this.k,this.v);
             //stats_device_browser表  活跃浏览器用户
             statsCommonDimension.setKpiDimension(activeBrowserUserKpi);
             BrowserDimension browserDimension = new BrowserDimension(browserName,browserVersion);
             this.k.setBrowserDimension(browserDimension);
             this.k.setStatsCommonDimension(statsCommonDimension);
-            this.v.setId(uuid);
             context.write(this.k,this.v);//输出
         //}
     }

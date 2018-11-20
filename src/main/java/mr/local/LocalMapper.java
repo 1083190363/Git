@@ -79,7 +79,6 @@ public class LocalMapper extends Mapper<LongWritable, Text, StatusLocalDimension
         this.v.setId(uuid);
         this.v.setSessionid(sessionId);
         context.write(this.k,this.v);//输出
-
          }
     }
 

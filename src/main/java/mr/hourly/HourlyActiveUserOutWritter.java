@@ -12,13 +12,12 @@ import value.StatsBaseDimension;
 import value.StatsOutputValue;
 import value.StatsUserDimension;
 import value.reduce.OutputValue;
-
 import java.sql.PreparedStatement;
 
 /**
  * @ProjectName: git
  * @Package: mr.activeuser
- * @ClassName: ActiveMemberOutWritter
+ * @ClassName: HourlyActiveUserOutWritter
  * @Description: 按照小时统计会话时长
  * @Author: CaoXueCheng
  * @CreateDate: 2018/11/6 20:39
@@ -36,42 +35,33 @@ public class HourlyActiveUserOutWritter implements IOutputWritter {
              int i=0;
              switch (v.getKpi()) {
                  case ACTIVE_USER:
-                     int activeUser = ((IntWritable) (v.getValue().get(new IntWritable(-1)))).get();
-                     ps.setInt(++i, iDimension.getDimensionIdByObject(k.getStatsCommonDimension().getDateDimension()));
-                     ps.setInt(++i, iDimension.getDimensionIdByObject(k.getStatsCommonDimension().getPlatformDimension()));
-                     ps.setInt(++i, activeUser);
-                     ps.setString(++i, conf.get(GlobalConstants.RUNNING_DATE));//注意这里需要在runner类里面进行赋值
-                     ps.setInt(++i, activeUser);
-                     //添加到批处理中，批量执行SQL语句
-                     break;
                  case BROWSER_ACTIVE_USER:
-                     int browserActiveUser = ((IntWritable) (v.getValue().get(new IntWritable(-1)))).get();
+                     int activeUser = ((IntWritable) (v.getValue().get(new IntWritable(-1)))).get();
                      ps.setInt(++i, iDimension.getDimensionIdByObject(k.getStatsCommonDimension().getDateDimension()));
                      ps.setInt(++i, iDimension.getDimensionIdByObject(k.getStatsCommonDimension().getPlatformDimension()));
                      if (v.getKpi().equals(KpiType.BROWSER_ACTIVE_USER)){
                          ps.setInt(++i, iDimension.getDimensionIdByObject(k.getBrowserDimension()));
                      }
-                     ps.setInt(++i, browserActiveUser);
+                     ps.setInt(++i, activeUser);
                      ps.setString(++i, conf.get(GlobalConstants.RUNNING_DATE));//注意这里需要在runner类里面进行赋值
-                     ps.setInt(++i, browserActiveUser);
+                     ps.setInt(++i, activeUser);
                      //添加到批处理中，批量执行SQL语句
                      break;
                  //获取活跃用户的值
-                 //int i = 0;
                  case HOURLY_ACTIVE_USER:
                  ps.setInt(++i, iDimension.getDimensionIdByObject(k.getStatsCommonDimension().getDateDimension()));
                  ps.setInt(++i, iDimension.getDimensionIdByObject(k.getStatsCommonDimension().getPlatformDimension()));
                  ps.setInt(++i, iDimension.getDimensionIdByObject(k.getStatsCommonDimension().getKpiDimension()));
-                 for (i++; i < 28; i++) {
-                     ps.setInt(i, ((IntWritable) ((MapWritable) v.getValue()).get(new IntWritable(i - 4))).get());
-                     ps.setInt(i + 25, ((IntWritable) ((MapWritable) v.getValue()).get(new IntWritable(i - 4))).get());
+                 for (int j=0; j < 24; j++) {
+                     ps.setInt(++i, ((IntWritable) ((MapWritable) v.getValue()).get(new IntWritable(j))).get());
                  }
                  ps.setString(++i, conf.get(GlobalConstants.RUNNING_DATE));
+                 for (int j=0; j < 24; j++) {
+                     ps.setInt(++i, ((IntWritable) ((MapWritable) v.getValue()).get(new IntWritable(j))).get());
+                     }
                  break;
-                 default:
-                     break;
              }
-            ps.addBatch();
+            ps.addBatch();//批处理执行sql语句
         } catch (Exception e) {
             logger.warn("给ps赋值失败！！！");
         }

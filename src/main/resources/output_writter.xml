@@ -12,16 +12,23 @@
         <value>mr.newuser.BrowserNewUserOutputWritter</value>
     </property>
 
+    <!--<property>-->
+        <!--<name>writter_active_user</name>-->
+        <!--<value>mr.activeuser.ActiveUserOutWritter</value>-->
+    <!--</property>-->
     <property>
         <name>writter_active_user</name>
-        <value>mr.activeuser.ActiveUserOutWritter</value>
+        <value>mr.hourly.HourlyActiveUserOutWritter</value>
     </property>
 
+    <!--<property>-->
+        <!--<name>writter_browser_active_user</name>-->
+        <!--<value>mr.activeuser.BrowserActiveUserOutWritter</value>-->
+    <!--</property>-->
     <property>
         <name>writter_browser_active_user</name>
-        <value>mr.activeuser.BrowserActiveUserOutWritter</value>
+        <value>mr.hourly.HourlyActiveUserOutWritter</value>
     </property>
-
     <property>
     <name>writter_active_member</name>
     <value>mr.activemember.ActiveMemberOutWritter</value>

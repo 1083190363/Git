@@ -33,58 +33,68 @@ public class HourlyActiveUserReducer extends Reducer<StatsUserDimension, TimeOut
     private OutputValue v = new OutputValue();
     private Set unique = new HashSet();//用于去重，利用HashSet
     private MapWritable map = new MapWritable();
+    //小时统计
     private Map<Integer,Set<String>> hourlyMap = new HashMap<Integer,Set<String>>();
-
+    private MapWritable houlyWritable = new MapWritable();
     @Override
     protected void setup(Context context) throws IOException, InterruptedException {
         //循环初始化
         for (int i=0;i<24;i++) {
             hourlyMap.put(i,new HashSet<String>());
-            map.put(new IntWritable(),new IntWritable(0));
+            map.put(new IntWritable(i),new IntWritable(0));
         }
     }
     @Override
     protected void reduce(StatsUserDimension key, Iterable<TimeOutputValue> values, Context context) throws IOException, InterruptedException {
-       try{
-           //判断事件是哪一个
-           String kpi = key.getStatsCommonDimension().getKpiDimension().getKpiName();
-           if (kpi.equals(KpiType.HOURLY_ACTIVE_USER)){
-               for (TimeOutputValue tv:values) {
-                   int hour = TimeUtil.getDateInfo(tv.getTime(), DateEnum.HOUR);
-                   hourlyMap.get(hour).add(tv.getId());
-               }
-               //构建输出的value
-               this.v.setKpi(KpiType.HOURLY_ACTIVE_USER);
-               //循环赋值
-               for (Map.Entry<Integer,Set<String>> en:hourlyMap.entrySet()) {
-                   this.map.put(new IntWritable(en.getKey()),
-                           new IntWritable(en.getValue().size()));
-               }
-               this.v.setValue(map);
-               //输出
-               context.write(key,this.v);
-           }else {
-               for (TimeOutputValue tv : values) {
-                   //将uuid取出来添加到set中
-                   this.unique.add(tv.getId());
-               }
-               //构造输出的value
-               MapWritable map1 = new MapWritable();
-               map1.put(new IntWritable(-1),new IntWritable(this.unique.size()));
-               this.v.setValue(this.map);
-               this.v.setKpi(KpiType.valueOfKpiName(key.getStatsCommonDimension().getKpiDimension().getKpiName()));
-               //输出
-               context.write(key,this.v);
-           }
-       }finally {
-           this.unique.clear();
-           this.hourlyMap.clear();
-           this.map.clear();
-           //循环初始化
-           for (int i = 0;i<24;i++){
-               hourlyMap.put(i,new HashSet<String>());
-               map.put(new IntWritable(i),new IntWritable(0));
-           }
+        try {
+            for(TimeOutputValue tv : values){//循环
+                this.unique.add(tv.getId());//将uuid取出添加到set中进行去重操作
+
+                //统计小时的活跃用户
+                if(key.getStatsCommonDimension().getKpiDimension().getKpiName().equals(KpiType.ACTIVE_USER.kpiName)) {
+                    //按小时的
+                    int hour = TimeUtil.getDateInfo(tv.getTime(), DateEnum.HOUR);
+                    this.hourlyMap.get(hour).add(tv.getId());
+                }
+            }
+
+            //按小时统计
+            if(key.getStatsCommonDimension().getKpiDimension().getKpiName().equals(KpiType.ACTIVE_USER.kpiName)){
+                for (Map.Entry<Integer,Set<String>> en : hourlyMap.entrySet()){
+                    //构造输出的value
+                    this.houlyWritable.put(new IntWritable(en.getKey()),new IntWritable(en.getValue().size()));
+                }
+                this.v.setKpi(KpiType.HOURLY_ACTIVE_USER);
+                this.v.setValue(this.houlyWritable);
+                context.write(key,this.v);
+            }
+
+
+            //构造输出的value
+            //根据kpi别名获取kpi类型
+            this.v.setKpi(KpiType.valueOfKpiName(key.getStatsCommonDimension().getKpiDimension().getKpiName()));
+            this.map.put(new IntWritable(-1),new IntWritable(this.unique.size()));
+            this.v.setValue(this.map);
+            //输出
+            context.write(key,this.v);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            this.unique.clear();
+            this.hourlyMap.clear();
+            this.houlyWritable.clear();
+            for(int i = 0; i < 24 ; i++){
+                this.hourlyMap.put(i,new HashSet<String>());
+                this.houlyWritable.put(new IntWritable(i),new IntWritable(0));
+            }
+        }
+
+        /**
+         * 注意点：
+         * 如果只是输出到文件系统中，则不需要kpi，不需要声明集合map
+         * value只需要uuid的个数，这就不要封装对象了
+         */
        }
     }
-}

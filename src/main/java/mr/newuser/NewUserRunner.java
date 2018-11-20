@@ -158,7 +158,7 @@ public class NewUserRunner implements Tool {
             conn = JdbcUtil.getConn();
             Map<String,Integer> map = new HashMap<String,Integer>() ;
             //开始判断维度Id是否正确
-            //System.out.println("哈哈哈");
+
             if(nowDateDimensionId > 0){
                 ps = conn.prepareStatement(conf.get("other_new_total_browser_user_now_sql"));
                 ps.setInt(1,nowDateDimensionId);

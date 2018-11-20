@@ -39,9 +39,7 @@ public class ActiveUserOutWritter implements IOutputWritter {
             ps.setInt(++i,iDimension.getDimensionIdByObject(k.getStatsCommonDimension().getDateDimension()));
             ps.setInt(++i,iDimension.getDimensionIdByObject(k.getStatsCommonDimension().getPlatformDimension()));
             //修改1
-//            if(v.getKpi().equals(KpiType.ACTIVE_USER)){
-//                ps.setInt(++i,iDimension.getDimensionIdByObject(k.getBrowserDimension()));
-//            }
+
             ps.setInt(++i,activeUser);
             ps.setString(++i,conf.get(GlobalConstants.RUNNING_DATE));//注意这里需要在runner类里面进行赋值
             ps.setInt(++i,activeUser);

@@ -3,8 +3,6 @@ package mr.hourly;
 import IpAnalysis.TimeUtil;
 import common.GlobalConstants;
 import mr.OutputToMySqlFormat;
-import mr.activeuser.ActiveUserMapper;
-import mr.activeuser.ActiveUserReducer;
 import mr.newuser.NewUserRunner;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -40,7 +38,7 @@ public class HourlyActiveUserRunner implements Tool {
         try {
                 ToolRunner.run(new Configuration(),new HourlyActiveUserRunner(),args);
         } catch (Exception e) {
-            logger.warn("Active_USER TO MYSQL is failed !!!",e);
+            logger.warn("Hourly_Active_USER TO MYSQL is failed !!!",e);
         }
     }
 
@@ -67,7 +65,7 @@ public class HourlyActiveUserRunner implements Tool {
 //        String date = TimeUtil.parseLongToString(GlobalConstants.DEFAULT_FORMAT);//这么做不符合实际生产，因为数据不可能是当天立刻产生的
 //        conf.set(GlobalConstants.RUNNING_DATE,date);
 
-        Job job = Job.getInstance(conf,"Active_USER TO MYSQL");
+        Job job = Job.getInstance(conf,"Hourly_Active_USER TO MYSQL");
 
         job.setJarByClass(HourlyActiveUserRunner.class);
 
@@ -81,7 +79,6 @@ public class HourlyActiveUserRunner implements Tool {
         job.setReducerClass(HourlyActiveUserReducer.class);
         job.setOutputKeyClass(StatsUserDimension.class);
         job.setOutputValueClass(OutputValue.class);
-
         job.setOutputFormatClass(OutputToMySqlFormat.class);
 
         //设置reduce task的数量
