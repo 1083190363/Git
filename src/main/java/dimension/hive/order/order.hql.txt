@@ -56,12 +56,144 @@ sqoop export --connect jdbc:mysql://hadoop01:3306/result  \
  --m 1;
 
 第一个指标orders
+create_table orders as
 select platform_convert(pl) pl,date_convert(from_unixtime(cast(s_time/1000 as bigint),"yyyy-MM-dd")),
 convert_currency(cut),convert_pay(pt),count(1)
 from logs
 group by oid,pl,s_time,cut,pt
 ;
-第二个指标成功支付的订单数量
+第二个指标支付成功订单数
+create table if not exists success_orders
+as
+select platform_convert(pl) pl,date_convert(from_unixtime(cast(s_time/1000 as bigint),"yyyy-MM-dd")) dt,
+convert_currency(cut) cut,convert_pay(pt) pt,count(1) success_orders
+from logs
+where en = 'e_cs'
+group by oid,pl,s_time,cut,pt
+;
+第三个指标支付失败订单数
+create table if not exists refund_orders
+as
+select platform_convert(pl) pl,date_convert(from_unixtime(cast(s_time/1000 as bigint),"yyyy-MM-dd")) dt,
+convert_currency(cut) cut,convert_pay(pt) pt,count(1) refund_orders
+from logs
+where en = 'e_cr'
+group by oid,pl,s_time,cut,pt
+;
+将三种order表的数据集中存了order_tmp表中
+create table if not exists order_tmp
+as
+select o1.platform_dimension_id as pl,date_dimension_id as dt,
+currency_type_dimension_id as cut,payment_type_dimension_id as pt,o1.orders as orders,o2.success_orders as success_orders,
+o3.refund_orders refund_orders
+from orders o1,success_orders o2,refund_orders o3
+where o1.platform_dimension_id = o2.pl and o2.pl = o3.pl
+and o1.date_dimension_id = o2.dt and o2.dt = o3.dt
+and o1.currency_type_dimension_id = o2.cut and o2.cut = o3.cut
+and o1.payment_type_dimension_id = o2.pt and o2.pt = o3.pt
+;
+第四个指标交易金额
+create table if not exists order_amount
+as
+select platform_convert(pl) pl,date_convert(from_unixtime(cast(s_time/1000 as bigint),"yyyy-MM-dd")) dt,
+convert_currency(cut) cut,convert_pay(pt) pt, cua order_amount
+from logs
+;
+第五个指标成功收益金额
+create table if not exists revenue_amount
+as
+select platform_convert(pl) pl,date_convert(from_unixtime(cast(s_time/1000 as bigint),"yyyy-MM-dd")) dt,
+convert_currency(cut) cut,convert_pay(pt) pt, cua revenue_amount
+from logs
+where en = 'e_cs'
+;
+第六个指标退款金额
+create table if not exists refund_amount
+as
+select platform_convert(pl) pl,date_convert(from_unixtime(cast(s_time/1000 as bigint),"yyyy-MM-dd")) dt,
+convert_currency(cut) cut,convert_pay(pt) pt, cua refund_amount
+from logs
+where en = 'e_cr'
+;
+第七个指标总收益
+create table if not exists total_revenue_amount
+as
+select platform_convert(pl) pl,date_convert(from_unixtime(cast(s_time/1000 as bigint),"yyyy-MM-dd")) dt,
+convert_currency(cut) cut,convert_pay(pt) pt, sum(cua) total_revenue_amount
+from logs
+where en = 'e_cs'
+group by pl,s_time,cut,pt
+;
+第八个指标总退款金额
+create table if not exists total_refund_amount
+as
+select platform_convert(pl) pl,date_convert(from_unixtime(cast(s_time/1000 as bigint),"yyyy-MM-dd")) dt,
+convert_currency(cut) cut,convert_pay(pt) pt, sum(cua) total_refund_amount
+from logs
+where en = 'e_cr'
+group by pl,s_time,cut,pt
+;
+将后五个金额汇总到amount_tmp中
+create table if not exists amount_tmp
+as
+select distinct a1.pl,a1.dt,a1.cut,a1.pt pt,a1.order_amount,a2.revenue_amount,a3.refund_amount,
+a4.total_revenue_amount,a5.total_refund_amount
+from order_amount a1,revenue_amount a2,refund_amount a3,total_revenue_amount a4,
+total_refund_amount a5
+where a1.pl = a2.pl and a2.pl = a3.pl and a3.pl = a4.pl and a4.pl = a5.pl
+;
+汇总:将order_tmp 与 amount_tmp表合并
+最终结果表
+create table if not exists stats_order(
+pl int,
+dt int,
+cut int,
+pt int,
+orders int,
+success_order int,
+refund_orders int,
+order_amount int,
+revenue_amount int,
+refund_amount int,
+total_revenue_amount int,
+total_refund_amount int,
+s_time string
+)
+;
+插入数据
+insert into table stats_order
+select distinct o.pl pl,o.dt dt,o.cut cut,o.pt pt,o.orders orders,o.success_orders success_orders,
+o.refund_orders refund_orders,a.order_amount order_amount,a.revenue_amount revenue_amount,
+a.refund_amount refund_amount,a.total_revenue_amount total_revenue_amount,
+a.total_refund_amount total_refund_amount,from_unixtime(cast(o2.s_time/1000 as bigint),"yyyy-MM-dd") dt
+from order_tmp o,amount_tmp a,order_info o2
+where o.pl = a.pl and o.dt =date_convert(from_unixtime(cast(o2.s_time/1000 as bigint),"yyyy-MM-dd"))
+;
+用sqoop导入mysql中
+sqoop export --connect jdbc:mysql://hadoop01:3306/result \
+--username hadoop --password hadoop --table stats_order \
+--export-dir hdfs://hadoop01:9000/user/hive/warehouse/pv.db/stats_order/* \
+--input-fields-terminated-by '\001' \
+;
+
+
+
+
+
+
+
+
+
+
+sqoop export --connect jdbc:mysql://hadoop01:3306/result  \
+--username hadoop --password hadoop --table stats_ordrs  \
+--export-dir "hdfs://hadoop01:9000/user/hive/warehouse/pv.db/order_info/*" \
+--columns 'platform_dimension_id,date_dimension_id,currency_type_dimension_id,payment_type_dimension_id,orders'
+--input-fields-terminated-by "\001" \
+--update-key platform_dimension_id,date_dimension_id,currency_type_dimension_id,payment_type_dimension_id,orders \
+--m 1;
+第二个指标成功支付的订单数量(根据事件类型来判断)
+
 
 导入mysql
 sqoop export --connect jdbc:mysql://hadoop01:3306/result \
