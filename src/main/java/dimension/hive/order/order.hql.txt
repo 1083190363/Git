@@ -3,10 +3,9 @@ create function convert_currency as 'dimension.hive.order.CurrencyTypeDimensionU
 create function convert_pay as 'dimension.hive.order.PaymentTypeDimensionUDF' using jar 'hdfs://hadoop01:9000/user/jars/git-1.0-SNAPSHOT.jar';
 创建PaymentTypeDimension对应的UDF
 1.创建order表,从logs表中获取数据,获取的字段是
-stime(时间戳),pl(平台).
+stime(时间戳),pl(平台)
 oid（订单id）on（订单名称）
 cua（支付金额）cut（支付货币类型）pt（支付方式）
-
 create table if not exists order_tmp(
 stime bigint,
 pl string,
@@ -176,46 +175,3 @@ sqoop export --connect jdbc:mysql://hadoop01:3306/result \
 --input-fields-terminated-by '\001' \
 ;
 
-
-
-
-
-
-
-
-
-
-sqoop export --connect jdbc:mysql://hadoop01:3306/result  \
---username hadoop --password hadoop --table stats_ordrs  \
---export-dir "hdfs://hadoop01:9000/user/hive/warehouse/pv.db/order_info/*" \
---columns 'platform_dimension_id,date_dimension_id,currency_type_dimension_id,payment_type_dimension_id,orders'
---input-fields-terminated-by "\001" \
---update-key platform_dimension_id,date_dimension_id,currency_type_dimension_id,payment_type_dimension_id,orders \
---m 1;
-第二个指标成功支付的订单数量(根据事件类型来判断)
-
-
-导入mysql
-sqoop export --connect jdbc:mysql://hadoop01:3306/result \
---username hadoop --password hadoop --table stats_order \
---export-dir hdfs://hadoop01:9000/user/hive/warehouse/pv.db/orders/* \
---input-fields-terminated-by '\001' \
---update-key platform_dimension_id,date_dimension_id,currency_type_dimension_id,payment_type_dimension_id \
---update-mode allowinsert \
-;
-第二个指标
-
-
-平台id，pkey
-日期id，pkey
-货币类型id，pkey
-支付类型id，pkey
-订单数量
-成功支付的订单数量
-退款的订单数量
-订单金额
-支付金额
-退款金额
-总的支付金额
-总的退款金额
-最后修改日期

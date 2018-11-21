@@ -1,0 +1,8 @@
+ver（版本号）s_time（时间戳）en（事件名称）u_ud（用户/访客唯一标识符uuid）u_mid（会员id）
+u_sd（会话id）c_time（客户端时间）l（语言）b_iev（浏览器信息useragent）
+b_rst（浏览器分辨率）p_url（当前页面的url）p_ref（上一个页面的url）tt（当前页面的标题）
+pl（平台）ip（ip）oid（订单id）on（订单名称）cua（支付金额）cut（支付货币类型）
+pt（支付方式）ca（Event事件的Category名称）ac（Event事件的action名称）
+kv（Event事件的自定义属性）du（Event事件的持续时间）browserName（浏览器名称）
+browserVersion（浏览器版本）osName（操作系统名称）osVersion（操作系统版本）
+country（国家）province（省份）city（城市）
