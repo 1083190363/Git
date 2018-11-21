@@ -48,6 +48,10 @@ public class IDimensionImplConverter implements IDimensionConverter {
                 sqls = buildLocalSqls(dimension);
             }else if(dimension instanceof EventDimension){
                 sqls = buildEventSqls(dimension);
+            }else if (dimension instanceof CurrencyTypeDimension){
+                sqls = buildCurrencySqls(dimension);
+            }else if (dimension instanceof PaymentTypeDimension){
+                sqls = buildPaymentSqls(dimension);
             }
 
             //获取jdbc的连接
@@ -66,6 +70,8 @@ public class IDimensionImplConverter implements IDimensionConverter {
         }
         throw new RuntimeException("插入基础维度类异常.");
     }
+
+
 
 
     /**
@@ -109,6 +115,16 @@ public class IDimensionImplConverter implements IDimensionConverter {
         return new String[]{insert,query};
     }
 
+    private String[] buildCurrencySqls(BaseDimension dimension) {
+        String query = "select id from `dimension_currency_type` where `currency_name` = ?";
+        String insert = "insert into `dimension_currency_type`(`currency_name`) values(?)";
+        return new String[]{insert,query};
+    }
+    private String[] buildPaymentSqls(BaseDimension dimension) {
+        String query = "select id from `dimension_payment_type` where `payment_type` = ?";
+        String insert = "insert into `dimension_payment_type`(`payment_type`) values(?)";
+        return new String[]{insert,query};
+    }
     /**
      * 构建维度key
      * @param dimension
@@ -152,6 +168,14 @@ public class IDimensionImplConverter implements IDimensionConverter {
             sb.append("event_");
             sb.append(event.getCategory());
             sb.append(event.getAction());
+        }else if (dimension instanceof  CurrencyTypeDimension){
+            CurrencyTypeDimension currencyType = (CurrencyTypeDimension)dimension;
+            sb.append("currencyType");
+            sb.append(currencyType.getCurrency_name());
+        }else if (dimension instanceof PaymentTypeDimension){
+            PaymentTypeDimension paymentType = (PaymentTypeDimension)dimension;
+            sb.append("paymentType");
+            sb.append(paymentType.getPayment_type());
         }
         return sb != null ? sb.toString() : null;
     }
@@ -227,6 +251,12 @@ public class IDimensionImplConverter implements IDimensionConverter {
                 dimension.base.EventDimension event = (dimension.base.EventDimension) dimension;
                 ps.setString(++i,event.getCategory());
                 ps.setString(++i,event.getAction());
+            }else if(dimension instanceof CurrencyTypeDimension){
+                CurrencyTypeDimension currencyType = (CurrencyTypeDimension)dimension;
+                ps.setString(++i,currencyType.getCurrency_name());
+            }else if (dimension instanceof PaymentTypeDimension){
+                PaymentTypeDimension paymentType = (PaymentTypeDimension)dimension;
+                ps.setString(++i,paymentType.getPayment_type());
             }
         } catch (SQLException e) {
             e.printStackTrace();

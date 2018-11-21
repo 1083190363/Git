@@ -1,0 +1,89 @@
+创建CurrencyTypeDimension对应的UDF
+create function convert_currency as 'dimension.hive.order.CurrencyTypeDimensionUDF' using jar 'hdfs://hadoop01:9000/user/jars/git-1.0-SNAPSHOT.jar';
+create function convert_pay as 'dimension.hive.order.PaymentTypeDimensionUDF' using jar 'hdfs://hadoop01:9000/user/jars/git-1.0-SNAPSHOT.jar';
+创建PaymentTypeDimension对应的UDF
+1.创建order表,从logs表中获取数据,获取的字段是
+stime(时间戳),pl(平台).
+oid（订单id）on（订单名称）
+cua（支付金额）cut（支付货币类型）pt（支付方式）
+
+create table if not exists order_tmp(
+stime bigint,
+pl string,
+oid string,
+oname string,
+cua string,
+cut string,
+pt string
+)
+partitioned by(month string,day string)
+row format delimited
+fields terminated by '\001'
+stored as orc
+;
+从logs中导入数据
+from logs
+insert into order_tmp partition(month = '11',day = '06')
+select s_time,pl,oid,on_,cua,cut,pt
+where month = '11'
+and day = '06'
+;
+
+创建order_info表并且导入数据
+create table if not exists order_info(
+order_id string,
+platform string,
+s_time bigint,
+currency_type string,
+payment_type string,
+amount int
+)
+;
+从order_tmp中查询对应字段并且导入数据
+from order_tmp
+insert into table order_info
+select oid,pl,stime,cut,pt,cua
+where month = '11'
+and oid != 'null'
+and day = '06'
+;
+用sqoop将hive中order_info中的数据导入mysql中
+show create table order_info;
+sqoop export --connect jdbc:mysql://hadoop01:3306/result  \
+--username hadoop --password hadoop --table order_info  \
+--export-dir "hdfs://hadoop01:9000/user/hive/warehouse/pv.db/order_info/*" \
+ --input-fields-terminated-by "\001" \
+ --m 1;
+
+第一个指标orders
+select platform_convert(pl) pl,date_convert(from_unixtime(cast(s_time/1000 as bigint),"yyyy-MM-dd")),
+convert_currency(cut),convert_pay(pt),count(1)
+from logs
+group by oid,pl,s_time,cut,pt
+;
+第二个指标成功支付的订单数量
+
+导入mysql
+sqoop export --connect jdbc:mysql://hadoop01:3306/result \
+--username hadoop --password hadoop --table stats_order \
+--export-dir hdfs://hadoop01:9000/user/hive/warehouse/pv.db/orders/* \
+--input-fields-terminated-by '\001' \
+--update-key platform_dimension_id,date_dimension_id,currency_type_dimension_id,payment_type_dimension_id \
+--update-mode allowinsert \
+;
+第二个指标
+
+
+平台id，pkey
+日期id，pkey
+货币类型id，pkey
+支付类型id，pkey
+订单数量
+成功支付的订单数量
+退款的订单数量
+订单金额
+支付金额
+退款金额
+总的支付金额
+总的退款金额
+最后修改日期

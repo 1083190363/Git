@@ -118,7 +118,14 @@ sqoop export --connect jdbc:mysql://hadoop01:3306/result \
 --update-mode allowinsert \
 ;
 10.将整个封装成一个shell脚本
-
+创建event_info表
+CREATE TABLE event_info (
+  `event_dimension_id` int,
+  `key` string,
+  `value` string,
+  `times` int
+)
+;
 
 
 
